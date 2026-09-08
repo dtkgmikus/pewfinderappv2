@@ -1,0 +1,303 @@
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Search, X, ArrowUpDown, MapPin, NotebookPen, SearchX, ThumbsUp, CircleUserRound } from 'lucide-react'
+import { useAuth } from '../lib/auth.jsx'
+import { fetchChurches, sortChurches, rankedCategories } from '../lib/churches.js'
+import { supabase } from '../lib/supabase.js'
+import { CATEGORY_LABEL, PRIORITY_CHIP_KEYS, SORT_OPTIONS } from '../data/constants.js'
+import { Logo } from '../components/ui/Logo.jsx'
+import { Chip } from '../components/ui/Chip.jsx'
+import { StarRow } from '../components/ui/Stars.jsx'
+import { PlatePhoto } from '../components/ui/PlatePhoto.jsx'
+
+const AREAS = ['All', 'Egg Harbor Twp', 'Mays Landing']
+
+export function HomeScreen() {
+  const [params, setParams] = useSearchParams()
+  const tab = params.get('tab') === 'visits' ? 'visits' : 'discover'
+  return tab === 'visits' ? <VisitsTab setTab={() => setParams({ tab: 'visits' })} /> : <DiscoverTab />
+}
+
+function TopTabs({ tab }) {
+  const [, setParams] = useSearchParams()
+  return (
+    <div className="flex gap-[22px] px-5 pt-[19px] border-b" style={{ borderColor: 'var(--color-divider)' }}>
+      <button
+        onClick={() => setParams({})}
+        className="pb-[9px] -mb-px font-[var(--font-heading)] font-semibold text-[17px]"
+        style={{ borderBottom: `2px solid ${tab === 'discover' ? 'var(--color-accent)' : 'transparent'}`, color: tab === 'discover' ? undefined : 'color-mix(in srgb,var(--color-text) 42%,transparent)' }}
+      >
+        Discover
+      </button>
+      <button
+        onClick={() => setParams({ tab: 'visits' })}
+        className="pb-[9px] -mb-px font-[var(--font-heading)] font-semibold text-[17px]"
+        style={{ borderBottom: `2px solid ${tab === 'visits' ? 'var(--color-accent)' : 'transparent'}`, color: tab === 'visits' ? undefined : 'color-mix(in srgb,var(--color-text) 42%,transparent)' }}
+      >
+        Your visits
+      </button>
+    </div>
+  )
+}
+
+function DiscoverTab() {
+  const navigate = useNavigate()
+  const { profile, user } = useAuth()
+  const [churches, setChurches] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [query, setQuery] = useState('')
+  const [area, setArea] = useState('All')
+  const [sortIdx, setSortIdx] = useState(0)
+  const [priorities, setPriorities] = useState([])
+
+  useEffect(() => {
+    fetchChurches().then(setChurches).catch(console.error).finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    if (profile) setPriorities(profile.priorities || [])
+  }, [profile])
+
+  const togglePriority = (key) => {
+    setPriorities((prev) => {
+      const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+      if (user) supabase.from('profiles').update({ priorities: next }).eq('id', user.id).then(() => {})
+      return next
+    })
+  }
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    let list = churches.filter((c) => area === 'All' || c.town === area)
+    if (q) {
+      list = list.filter((c) => `${c.name} ${c.denomination} ${c.street} ${c.town}`.toLowerCase().includes(q))
+    }
+    return sortChurches(list, sortIdx, priorities)
+  }, [churches, query, area, sortIdx, priorities])
+
+  const noResults = !!query.trim() && filtered.length === 0
+
+  return (
+    <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-bg)', paddingTop: 24 }}>
+        <div className="px-5">
+          <div className="flex items-center justify-between gap-3">
+            <Logo />
+            <button onClick={() => navigate('/account')} className="flex items-center gap-1" style={{ color: 'var(--color-accent-600)', fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase' }}>
+              {user ? <MapPin size={11} strokeWidth={1.6} /> : <CircleUserRound size={13} strokeWidth={1.6} />}
+              <span>{user ? 'Egg Harbor Twp, NJ' : 'Sign in'}</span>
+            </button>
+          </div>
+          <h1 className="pf-h" style={{ fontSize: 33, fontWeight: 400, margin: '14px 0 0' }}>Find the Church<br />for You</h1>
+        </div>
+
+        <TopTabs tab="discover" />
+      </div>
+
+      <div className="px-5 pt-4">
+        <div className="flex items-center gap-[9px] border rounded-[var(--radius-md)] px-3 py-[10px]" style={{ borderColor: 'var(--color-divider)', background: 'var(--color-neutral-100)' }}>
+          <Search size={15} strokeWidth={1.5} />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Church, denomination, or street"
+            className="flex-1 min-w-0 border-0 bg-transparent text-[13.5px] outline-none"
+          />
+          {query && (
+            <button onClick={() => setQuery('')} style={{ color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+              <X size={15} strokeWidth={1.6} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex gap-[7px] px-5 pt-[15px]">
+        {AREAS.map((a) => (
+          <Chip key={a} active={area === a} onClick={() => setArea(a)} className="flex-1 !px-1.5 text-center">
+            {a === 'All' ? `All ${churches.length}` : `${a} ${churches.filter((c) => c.town === a).length}`}
+          </Chip>
+        ))}
+      </div>
+
+      <p className="m-0 px-5" style={{ padding: '17px 20px 8px', fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+        What matters most to you
+      </p>
+      <div className="flex flex-wrap gap-[7px] px-5">
+        {PRIORITY_CHIP_KEYS.map((key) => (
+          <Chip key={key} active={priorities.includes(key)} onClick={() => togglePriority(key)}>
+            {CATEGORY_LABEL[key]}
+          </Chip>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between px-5" style={{ padding: '17px 20px 9px' }}>
+        <span style={{ fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+          {query.trim()
+            ? `${filtered.length} ${filtered.length === 1 ? 'match' : 'matches'} for "${query.trim()}"`
+            : `${filtered.length} churches · ${area === 'All' ? 'within 10 mi' : area}`}
+        </span>
+        <button onClick={() => setSortIdx((i) => (i + 1) % SORT_OPTIONS.length)} className="flex items-center gap-[5px] text-[11.5px]" style={{ color: 'var(--color-accent-600)' }}>
+          <ArrowUpDown size={12} strokeWidth={1.6} />{SORT_OPTIONS[sortIdx]}
+        </button>
+      </div>
+
+      {!loading && filtered.map((c) => {
+        const ranked = rankedCategories(c)
+        return (
+          <button
+            key={c.id}
+            onClick={() => navigate(`/church/${c.slug}`)}
+            className="pf-tap block w-full text-left px-5 py-[15px] border-t"
+            style={{ borderColor: 'var(--color-divider)' }}
+          >
+            <div className="flex gap-[13px] items-start">
+              <div className="plate flex-none relative" style={{ width: 62, height: 62 }}>
+                <PlatePhoto url={c.thumbnail_photo_url} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="pf-h" style={{ fontSize: 19 }}>{c.name}</div>
+                <div style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 3 }}>{c.denomination} · {c.street}</div>
+                <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)', marginTop: 2 }}>{c.town} · {c.distance_mi.toFixed(1)} mi</div>
+                {c.rated ? (
+                  <div>
+                    <div className="flex items-center gap-[6px]" style={{ marginTop: 7, color: 'var(--color-accent)' }}>
+                      <StarRow value={c.avg_rating} size={12} />
+                      <span style={{ fontSize: 12, color: 'var(--color-text)' }}>{c.avg_rating.toFixed(1)}</span>
+                      <span style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>({c.review_count})</span>
+                    </div>
+                    {ranked.length > 0 && (
+                      <div className="flex gap-[6px] flex-wrap" style={{ marginTop: 9 }}>
+                        <span style={{ fontSize: 10.5, padding: '3px 7px', borderRadius: 'var(--radius-md)', background: 'color-mix(in srgb,var(--color-accent) 13%,transparent)', color: 'var(--color-accent-700)' }}>
+                          Strong: {ranked[0].label}
+                        </span>
+                        <span style={{ fontSize: 10.5, padding: '3px 7px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-divider)', color: 'color-mix(in srgb,var(--color-text) 60%,transparent)' }}>
+                          Weak: {ranked[ranked.length - 1].label}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-[5px]" style={{ marginTop: 8, color: 'var(--color-accent-600)', fontSize: 11 }}>
+                    <span>No reviews yet — be the first</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </button>
+        )
+      })}
+
+      {noResults && (
+        <div className="text-center flex flex-col items-center gap-[9px] border-t" style={{ padding: '34px 32px', borderColor: 'var(--color-divider)' }}>
+          <span style={{ color: 'var(--color-accent)' }}><SearchX size={22} strokeWidth={1.2} /></span>
+          <h2 className="pf-h" style={{ fontSize: 18 }}>Nothing matches &ldquo;{query}&rdquo;</h2>
+          <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)' }}>
+            Try a denomination, a street, or a shorter piece of the name. {area !== 'All' && `You're filtered to ${area}.`}
+          </p>
+          <button onClick={() => setQuery('')} className="btn btn-secondary" style={{ marginTop: 4, padding: '8px 13px', fontSize: 13 }}>Clear search</button>
+        </div>
+      )}
+
+      <div style={{ height: 1, background: 'var(--color-divider)' }} />
+      <p style={{ margin: 0, padding: '18px 20px 6px', fontSize: 11.5, fontStyle: 'italic', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)', textAlign: 'center' }}>
+        Only visits with a date count toward a rating.
+      </p>
+    </div>
+  )
+}
+
+function VisitsTab() {
+  const { user, profile } = useAuth()
+  const navigate = useNavigate()
+  const [reviews, setReviews] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!user) { setLoading(false); return }
+    supabase
+      .from('reviews')
+      .select('id, overall_rating, well_text, visited_on, seed_helpful_count, created_at, is_anonymous, churches(name, slug)')
+      .eq('member_id', user.id)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => setReviews(data || []))
+      .finally(() => setLoading(false))
+  }, [user])
+
+  const helpfulTotal = reviews.reduce((sum, r) => sum + (r.seed_helpful_count || 0), 0)
+
+  return (
+    <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-bg)', paddingTop: 24 }}>
+        <div className="px-5">
+          <div className="flex items-center justify-between gap-3">
+            <Logo />
+            <div className="flex items-center gap-1" style={{ color: 'var(--color-accent-600)', fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase' }}>
+              <NotebookPen size={11} strokeWidth={1.6} />
+              <span>Your contributions</span>
+            </div>
+          </div>
+          <h1 className="pf-h" style={{ fontSize: 33, fontWeight: 400, margin: '9px 0 0' }}>
+            {user ? 'Your reviews' : 'Sign up to review'}
+          </h1>
+        </div>
+
+        <TopTabs tab="visits" />
+      </div>
+
+      {!user && (
+        <div className="px-5 pt-6 flex flex-col gap-3">
+          <p style={{ fontSize: 13, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
+            Create an account to write reviews, save churches, and see your review history here.
+          </p>
+          <button onClick={() => navigate('/signup')} className="btn btn-primary-solid" style={{ padding: 12 }}>Get started</button>
+        </div>
+      )}
+
+      {user && (
+        <>
+          <div className="flex gap-[9px] px-5 pt-[18px]">
+            <div className="flex-1 border rounded-[var(--radius-md)]" style={{ borderColor: 'var(--color-divider)', padding: '11px 12px' }}>
+              <div className="pf-h" style={{ fontSize: 25, fontWeight: 400 }}>{reviews.length}</div>
+              <div style={{ fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>Reviews written</div>
+            </div>
+            <div className="flex-1 border rounded-[var(--radius-md)]" style={{ borderColor: 'var(--color-divider)', padding: '11px 12px' }}>
+              <div className="pf-h" style={{ fontSize: 25, fontWeight: 400 }}>{helpfulTotal}</div>
+              <div style={{ fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>Found helpful</div>
+            </div>
+          </div>
+
+          <p style={{ margin: 0, padding: '24px 20px 9px', fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)', borderTop: '1px solid var(--color-divider)' }}>
+            Published
+          </p>
+          {!loading && reviews.length === 0 && (
+            <p className="px-5" style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
+              No reviews yet. Find a church in Discover and write the first one.
+            </p>
+          )}
+          {reviews.map((r) => (
+            <div key={r.id} className="px-5 border-t" style={{ padding: '15px 20px', borderColor: 'var(--color-divider)' }}>
+              <div className="flex items-baseline justify-between gap-[10px]">
+                <button onClick={() => navigate(`/church/${r.churches.slug}`)} className="pf-h" style={{ fontSize: 17, color: 'var(--color-text)' }}>{r.churches.name}</button>
+                <span style={{ flex: 'none', fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{r.visited_on}</span>
+              </div>
+              <div className="flex items-center gap-[7px]" style={{ marginTop: 5, color: 'var(--color-accent)' }}>
+                <StarRow value={r.overall_rating} size={11} />
+                <span style={{ fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
+                  {r.is_anonymous ? 'Posted anonymously' : `Posted as ${profile?.name || 'you'}`}
+                </span>
+              </div>
+              {r.well_text && (
+                <p style={{ margin: '7px 0 0', fontSize: 12.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 78%,transparent)' }}>{r.well_text}</p>
+              )}
+              <div className="flex items-center gap-[5px]" style={{ marginTop: 8, fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+                <ThumbsUp size={11} strokeWidth={1.6} />
+                <span>{r.seed_helpful_count} found this helpful</span>
+              </div>
+            </div>
+          ))}
+          <div style={{ height: 1, background: 'var(--color-divider)', marginBottom: 10 }} />
+        </>
+      )}
+    </div>
+  )
+}
