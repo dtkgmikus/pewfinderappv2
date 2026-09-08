@@ -1,6 +1,6 @@
 # PewFinder
 
-A church-review app for Egg Harbor Township & Mays Landing, NJ. Members
+A church-review app for Atlantic County, NJ. Members
 discover and rate churches across eleven categories; churches claim their
 listing, reply to reviews, post sermon notes, and run promoted events on a
 paid tier; PewFinder staff moderate flags, claims, and promotions.

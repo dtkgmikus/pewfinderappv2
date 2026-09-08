@@ -133,6 +133,11 @@ insert into churches (slug, name, denomination, street, town, zip, distance_mi, 
   ('r28', 'One Hope in Christ Christian Fellowship', 'Baptist', 'Mays Landing', 'Mays Landing', '08330', 8.0, 'Service times not listed', array['Service times not listed','Unclaimed listing']),
   ('r29', 'Weymouth United Methodist Church', 'United Methodist', 'Mays Landing', 'Mays Landing', '08330', 9.6, 'Service times not listed', array['Service times not listed','Unclaimed listing']);
 
+-- Town-center coordinates for "near me" — see patch-002 for the same
+-- backfill against an already-deployed database.
+update churches set lat = 39.37650, lng = -74.63600 where town = 'Egg Harbor Twp' and lat is null;
+update churches set lat = 39.45230, lng = -74.72740 where town = 'Mays Landing' and lat is null;
+
 -- ==================================================== map pin placements --
 update churches set map_x = v.x, map_y = v.y from (values
   ('greentree', 58, 36), ('oceanheights', 30, 52), ('zion', 72, 58), ('faithbible', 44, 70),

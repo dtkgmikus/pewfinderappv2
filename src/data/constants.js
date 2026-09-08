@@ -39,6 +39,17 @@ export const PRIORITY_CHIP_KEYS = ['friendliness', 'kids_nursery', 'parking', 'a
 
 export const SORT_OPTIONS = ['Best fit', 'Closest', 'Highest rated', 'Newest']
 
+export const ATLANTIC_COUNTY_TOWNS = [
+  'Absecon', 'Atlantic City', 'Brigantine', 'Buena', 'Buena Vista Twp', 'Corbin City',
+  'Egg Harbor City', 'Egg Harbor Twp', 'Estell Manor', 'Folsom', 'Galloway Twp',
+  'Hamilton Twp', 'Hammonton', 'Linwood', 'Longport', 'Margate City', 'Mays Landing',
+  'Mullica Twp', 'Northfield', 'Pleasantville', 'Port Republic', 'Somers Point',
+  'Ventnor City', 'Weymouth Twp',
+]
+
+export const SEARCH_MODES = ['near_me', 'city', 'name', 'county']
+export const SEARCH_MODE_LABEL = { near_me: 'Near me', city: 'City', name: 'Church name', county: 'County' }
+
 export const PROGRAM_GROUPS = [
   ['Children & youth', ['Sunday school', 'Nursery / childcare', 'Kids club (AWANA or similar)', 'Youth group, grades 6–8', 'Youth group, grades 9–12', 'Vacation Bible school', 'Preschool or day school', 'After-school program']],
   ['Adults & groups', ['Small groups / Bible study', 'Prayer meeting', 'Men’s ministry', 'Women’s ministry', 'Young adults', 'Senior adult ministry', 'Choir or worship team', 'Marriage and couples']],

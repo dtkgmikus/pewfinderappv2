@@ -62,7 +62,7 @@ export function MapScreen() {
             <div className="plate flex-none relative" style={{ width: 54, height: 54 }}><PlatePhoto url={selected.thumbnail_photo_url} /></div>
             <div className="flex-1 min-w-0">
               <div className="pf-h" style={{ fontSize: 18 }}>{selected.name}</div>
-              <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 2 }}>{selected.denomination} · {selected.distance_mi.toFixed(1)} mi · {selected.service_times}</div>
+              <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 2 }}>{selected.denomination}{selected.distance_mi > 0 && ` · ${selected.distance_mi.toFixed(1)} mi`} · {selected.service_times}</div>
               <div className="flex items-center gap-[6px]" style={{ marginTop: 6, color: 'var(--color-accent-2)' }}>
                 <StarRow value={selected.avg_rating} size={12} />
                 <span style={{ fontSize: 11.5, color: 'var(--color-text)' }}>{selected.avg_rating.toFixed(1)}</span>

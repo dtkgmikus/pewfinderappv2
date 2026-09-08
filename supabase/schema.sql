@@ -110,8 +110,20 @@ create table churches (
   name text not null,
   denomination text not null,
   street text not null,
-  town text not null check (town in ('Egg Harbor Twp','Mays Landing')),
+  town text not null check (town in (
+    'Absecon','Atlantic City','Brigantine','Buena','Buena Vista Twp','Corbin City',
+    'Egg Harbor City','Egg Harbor Twp','Estell Manor','Folsom','Galloway Twp',
+    'Hamilton Twp','Hammonton','Linwood','Longport','Margate City','Mays Landing',
+    'Mullica Twp','Northfield','Pleasantville','Port Republic','Somers Point',
+    'Ventnor City','Weymouth Twp'
+  )),
+  county text not null default 'Atlantic',
   zip text not null default '08234',
+  -- real coordinates for "near me" distance search — town-center precision
+  -- where a per-church address wasn't geocoded, still accurate enough to
+  -- rank/filter by actual distance from the visitor.
+  lat numeric(8,5),
+  lng numeric(8,5),
   distance_mi numeric(4,1) not null default 0,
   service_times text not null default 'Service times not listed',
   first_visit_note text,

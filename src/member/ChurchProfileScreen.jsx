@@ -91,7 +91,7 @@ export function ChurchProfileScreen() {
       <div className="px-5" style={{ paddingTop: 16 }}>
         <h1 className="pf-h" style={{ fontSize: 29, fontWeight: 400 }}>{church.name}</h1>
         <div style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 5 }}>
-          {church.denomination} · {church.street} · {church.distance_mi.toFixed(1)} mi
+          {church.denomination} · {church.street}{church.distance_mi > 0 && ` · ${church.distance_mi.toFixed(1)} mi`}
         </div>
         <div className="flex items-center gap-2" style={{ marginTop: 11, color: 'var(--color-accent-2)' }}>
           {church.rated ? (

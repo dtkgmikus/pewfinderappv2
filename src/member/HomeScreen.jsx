@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Search, X, ArrowUpDown, MapPin, NotebookPen, SearchX, ThumbsUp, CircleUserRound } from 'lucide-react'
+import { Search, X, ArrowUpDown, MapPin, NotebookPen, SearchX, ThumbsUp, CircleUserRound, LocateFixed, Building2, Map as MapIcon } from 'lucide-react'
 import { useAuth } from '../lib/auth.jsx'
-import { fetchChurches, sortChurches, rankedCategories } from '../lib/churches.js'
+import { fetchChurches, sortChurches, rankedCategories, withDistanceFrom } from '../lib/churches.js'
 import { supabase } from '../lib/supabase.js'
-import { CATEGORY_LABEL, PRIORITY_CHIP_KEYS, SORT_OPTIONS } from '../data/constants.js'
+import { CATEGORY_LABEL, PRIORITY_CHIP_KEYS, SORT_OPTIONS, ATLANTIC_COUNTY_TOWNS, SEARCH_MODES, SEARCH_MODE_LABEL } from '../data/constants.js'
 import { Logo } from '../components/ui/Logo.jsx'
 import { Chip } from '../components/ui/Chip.jsx'
 import { StarRow } from '../components/ui/Stars.jsx'
 import { PlatePhoto } from '../components/ui/PlatePhoto.jsx'
 
-const AREAS = ['All', 'Egg Harbor Twp', 'Mays Landing']
+const SEARCH_MODE_ICON = { near_me: LocateFixed, city: Building2, name: Search, county: MapIcon }
 
 export function HomeScreen() {
   const [params, setParams] = useSearchParams()
@@ -45,8 +45,12 @@ function DiscoverTab() {
   const { profile, user } = useAuth()
   const [churches, setChurches] = useState([])
   const [loading, setLoading] = useState(true)
-  const [query, setQuery] = useState('')
-  const [area, setArea] = useState('All')
+  const [searchMode, setSearchMode] = useState('name')
+  const [nameQuery, setNameQuery] = useState('')
+  const [cityValue, setCityValue] = useState('')
+  const [countyValue, setCountyValue] = useState('')
+  const [userCoords, setUserCoords] = useState(null)
+  const [geoStatus, setGeoStatus] = useState('idle') // idle | loading | granted | denied | error
   const [sortIdx, setSortIdx] = useState(0)
   const [priorities, setPriorities] = useState([])
 
@@ -66,16 +70,31 @@ function DiscoverTab() {
     })
   }
 
+  const useMyLocation = () => {
+    if (!navigator.geolocation) { setGeoStatus('error'); return }
+    setGeoStatus('loading')
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }); setGeoStatus('granted'); setSortIdx(1) },
+      () => setGeoStatus('denied'),
+      { enableHighAccuracy: false, timeout: 12000 },
+    )
+  }
+
+  const counties = useMemo(() => [...new Set(churches.map((c) => c.county).filter(Boolean))].sort(), [churches])
+
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    let list = churches.filter((c) => area === 'All' || c.town === area)
-    if (q) {
+    let list = churches
+    if (searchMode === 'name' && nameQuery.trim()) {
+      const q = nameQuery.trim().toLowerCase()
       list = list.filter((c) => `${c.name} ${c.denomination} ${c.street} ${c.town}`.toLowerCase().includes(q))
     }
+    if (searchMode === 'city' && cityValue) list = list.filter((c) => c.town === cityValue)
+    if (searchMode === 'county' && countyValue) list = list.filter((c) => c.county === countyValue)
+    if (searchMode === 'near_me' && userCoords) list = withDistanceFrom(list, userCoords)
     return sortChurches(list, sortIdx, priorities)
-  }, [churches, query, area, sortIdx, priorities])
+  }, [churches, searchMode, nameQuery, cityValue, countyValue, userCoords, sortIdx, priorities])
 
-  const noResults = !!query.trim() && filtered.length === 0
+  const noResults = searchMode === 'name' && !!nameQuery.trim() && filtered.length === 0
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
@@ -85,7 +104,7 @@ function DiscoverTab() {
             <Logo />
             <button onClick={() => navigate('/account')} className="flex items-center gap-1" style={{ color: 'var(--color-accent-600)', fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase' }}>
               {user ? <MapPin size={11} strokeWidth={1.6} /> : <CircleUserRound size={13} strokeWidth={1.6} />}
-              <span>{user ? 'Egg Harbor Twp, NJ' : 'Sign in'}</span>
+              <span>{user ? 'Atlantic County, NJ' : 'Sign in'}</span>
             </button>
           </div>
           <h1 className="pf-h" style={{ fontSize: 33, fontWeight: 400, margin: '14px 0 0' }}>Find the Church<br />for You</h1>
@@ -95,28 +114,92 @@ function DiscoverTab() {
       </div>
 
       <div className="px-5 pt-4">
-        <div className="flex items-center gap-[9px] border rounded-[var(--radius-md)] px-3 py-[10px]" style={{ borderColor: 'var(--color-divider)', background: 'var(--color-neutral-100)' }}>
-          <Search size={15} strokeWidth={1.5} />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Church, denomination, or street"
-            className="flex-1 min-w-0 border-0 bg-transparent text-[13.5px] outline-none"
-          />
-          {query && (
-            <button onClick={() => setQuery('')} style={{ color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
-              <X size={15} strokeWidth={1.6} />
-            </button>
+        <div className="flex gap-[6px]">
+          {SEARCH_MODES.map((m) => {
+            const Icon = SEARCH_MODE_ICON[m]
+            return (
+              <button
+                key={m}
+                onClick={() => setSearchMode(m)}
+                className="flex-1 flex flex-col items-center gap-[5px] border rounded-[var(--radius-md)]"
+                style={{
+                  padding: '9px 4px',
+                  borderColor: searchMode === m ? 'var(--color-accent-2)' : 'var(--color-divider)',
+                  background: searchMode === m ? 'color-mix(in srgb,var(--color-accent-2) 13%,transparent)' : 'transparent',
+                  color: searchMode === m ? 'var(--color-accent-2-700)' : 'color-mix(in srgb,var(--color-text) 62%,transparent)',
+                }}
+              >
+                <Icon size={15} strokeWidth={1.6} />
+                <span style={{ fontSize: 9.5, letterSpacing: '.03em' }}>{SEARCH_MODE_LABEL[m]}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <div style={{ marginTop: 10 }}>
+          {searchMode === 'name' && (
+            <div className="flex items-center gap-[9px] border rounded-[var(--radius-md)] px-3 py-[10px]" style={{ borderColor: 'var(--color-divider)', background: 'var(--color-neutral-100)' }}>
+              <Search size={15} strokeWidth={1.5} />
+              <input
+                value={nameQuery}
+                onChange={(e) => setNameQuery(e.target.value)}
+                placeholder="Church, denomination, or street"
+                className="flex-1 min-w-0 border-0 bg-transparent text-[13.5px] outline-none"
+              />
+              {nameQuery && (
+                <button onClick={() => setNameQuery('')} style={{ color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+                  <X size={15} strokeWidth={1.6} />
+                </button>
+              )}
+            </div>
+          )}
+
+          {searchMode === 'city' && (
+            <select
+              value={cityValue}
+              onChange={(e) => setCityValue(e.target.value)}
+              className="input"
+              style={{ width: '100%', fontSize: 13.5 }}
+            >
+              <option value="">All cities ({churches.length})</option>
+              {ATLANTIC_COUNTY_TOWNS.map((t) => (
+                <option key={t} value={t}>{t} ({churches.filter((c) => c.town === t).length})</option>
+              ))}
+            </select>
+          )}
+
+          {searchMode === 'county' && (
+            <select
+              value={countyValue}
+              onChange={(e) => setCountyValue(e.target.value)}
+              className="input"
+              style={{ width: '100%', fontSize: 13.5 }}
+            >
+              <option value="">All counties ({churches.length})</option>
+              {counties.map((co) => (
+                <option key={co} value={co}>{co} County ({churches.filter((c) => c.county === co).length})</option>
+              ))}
+            </select>
+          )}
+
+          {searchMode === 'near_me' && (
+            <div className="flex items-center gap-[9px] border rounded-[var(--radius-md)] px-3 py-[10px]" style={{ borderColor: 'var(--color-divider)', background: 'var(--color-neutral-100)' }}>
+              <LocateFixed size={15} strokeWidth={1.5} style={{ color: geoStatus === 'granted' ? 'var(--color-accent-2)' : undefined, flex: 'none' }} />
+              <span className="flex-1 min-w-0" style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 68%,transparent)' }}>
+                {geoStatus === 'granted' && 'Showing distance from your location'}
+                {geoStatus === 'loading' && 'Finding you…'}
+                {geoStatus === 'denied' && "Location blocked — try City or County search instead"}
+                {geoStatus === 'error' && "Couldn't get your location — try City or County search instead"}
+                {geoStatus === 'idle' && 'Use your location to sort churches by distance'}
+              </span>
+              {geoStatus !== 'loading' && (
+                <button onClick={useMyLocation} className="flex-none" style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-accent-2-700)' }}>
+                  {geoStatus === 'granted' ? 'Refresh' : 'Use my location'}
+                </button>
+              )}
+            </div>
           )}
         </div>
-      </div>
-
-      <div className="flex gap-[7px] px-5 pt-[15px]">
-        {AREAS.map((a) => (
-          <Chip key={a} active={area === a} onClick={() => setArea(a)} className="flex-1 !px-1.5 text-center">
-            {a === 'All' ? `All ${churches.length}` : `${a} ${churches.filter((c) => c.town === a).length}`}
-          </Chip>
-        ))}
       </div>
 
       <p className="m-0 px-5" style={{ padding: '17px 20px 8px', fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
@@ -132,9 +215,11 @@ function DiscoverTab() {
 
       <div className="flex items-center justify-between px-5" style={{ padding: '17px 20px 9px' }}>
         <span style={{ fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
-          {query.trim()
-            ? `${filtered.length} ${filtered.length === 1 ? 'match' : 'matches'} for "${query.trim()}"`
-            : `${filtered.length} churches · ${area === 'All' ? 'within 10 mi' : area}`}
+          {searchMode === 'name' && nameQuery.trim() && `${filtered.length} ${filtered.length === 1 ? 'match' : 'matches'} for "${nameQuery.trim()}"`}
+          {searchMode === 'name' && !nameQuery.trim() && `${filtered.length} churches · Atlantic County`}
+          {searchMode === 'city' && `${filtered.length} churches · ${cityValue || 'all cities'}`}
+          {searchMode === 'county' && `${filtered.length} churches · ${countyValue ? `${countyValue} County` : 'all counties'}`}
+          {searchMode === 'near_me' && `${filtered.length} churches${geoStatus === 'granted' ? ', sorted by distance' : ''}`}
         </span>
         <button onClick={() => setSortIdx((i) => (i + 1) % SORT_OPTIONS.length)} className="flex items-center gap-[5px] text-[11.5px]" style={{ color: 'var(--color-accent-600)' }}>
           <ArrowUpDown size={12} strokeWidth={1.6} />{SORT_OPTIONS[sortIdx]}
@@ -157,7 +242,9 @@ function DiscoverTab() {
               <div className="flex-1 min-w-0">
                 <div className="pf-h" style={{ fontSize: 19 }}>{c.name}</div>
                 <div style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 3 }}>{c.denomination} · {c.street}</div>
-                <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)', marginTop: 2 }}>{c.town} · {c.distance_mi.toFixed(1)} mi</div>
+                <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)', marginTop: 2 }}>
+                  {c.town}{searchMode === 'near_me' && geoStatus === 'granted' && !c.distance_unknown && ` · ${c.distance_mi.toFixed(1)} mi`}
+                </div>
                 {c.rated ? (
                   <div>
                     <div className="flex items-center gap-[6px]" style={{ marginTop: 7, color: 'var(--color-accent-2)' }}>
@@ -190,11 +277,11 @@ function DiscoverTab() {
       {noResults && (
         <div className="text-center flex flex-col items-center gap-[9px] border-t" style={{ padding: '34px 32px', borderColor: 'var(--color-divider)' }}>
           <span style={{ color: 'var(--color-accent)' }}><SearchX size={22} strokeWidth={1.2} /></span>
-          <h2 className="pf-h" style={{ fontSize: 18 }}>Nothing matches &ldquo;{query}&rdquo;</h2>
+          <h2 className="pf-h" style={{ fontSize: 18 }}>Nothing matches &ldquo;{nameQuery}&rdquo;</h2>
           <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)' }}>
-            Try a denomination, a street, or a shorter piece of the name. {area !== 'All' && `You're filtered to ${area}.`}
+            Try a denomination, a street, or a shorter piece of the name.
           </p>
-          <button onClick={() => setQuery('')} className="btn btn-secondary" style={{ marginTop: 4, padding: '8px 13px', fontSize: 13 }}>Clear search</button>
+          <button onClick={() => setNameQuery('')} className="btn btn-secondary" style={{ marginTop: 4, padding: '8px 13px', fontSize: 13 }}>Clear search</button>
         </div>
       )}
 
