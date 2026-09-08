@@ -1,17 +1,17 @@
 /** The diamond-marker mark, picked in the design chat as direction "1c" —
  * a map pin abstracted into a rotated square, plus the wordmark. Two-tone:
- * the diamond stays saffron, the stem (the pin's "point") is plum. `tone`
- * picks the shade of plum so the stem still shows up on a dark sidebar. */
+ * the diamond's outline is saffron, its head is filled solid plum, and the
+ * stem (the pin's "point") is plum too. `tone` picks the shade of plum so
+ * the mark still reads clearly on a dark sidebar. */
 export function Mark({ size = 13, tone = 'light' }) {
-  const stemColor = tone === 'dark' ? 'var(--color-accent-2-300)' : 'var(--color-accent-2)'
-  const fillOpacity = tone === 'dark' ? 22 : 14
+  const plumColor = tone === 'dark' ? 'var(--color-accent-2-300)' : 'var(--color-accent-2)'
   return (
     <span className="flex flex-col items-center gap-0.5">
       <span
         className="block rotate-45 border"
-        style={{ width: size, height: size, borderColor: 'var(--color-accent)', background: `color-mix(in srgb,var(--color-accent) ${fillOpacity}%,transparent)` }}
+        style={{ width: size, height: size, borderColor: 'var(--color-accent)', background: plumColor }}
       />
-      <span className="block" style={{ width: 1, height: size * 0.55, background: stemColor }} />
+      <span className="block" style={{ width: 1, height: size * 0.55, background: plumColor }} />
     </span>
   )
 }
@@ -34,7 +34,7 @@ export function Wordmark({ size = 21, tone = 'light', suffix }) {
 export function Logo({ size = 21, tone = 'light' }) {
   return (
     <span className="flex items-center gap-[9px]">
-      <Mark tone={tone} />
+      <Mark size={size * 0.62} tone={tone} />
       <Wordmark size={size} tone={tone} />
     </span>
   )

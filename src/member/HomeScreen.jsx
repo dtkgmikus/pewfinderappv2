@@ -98,16 +98,16 @@ function DiscoverTab() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-surface)', paddingTop: 24 }}>
-        <div className="px-5">
-          <div className="flex items-center justify-between gap-3">
-            <Logo />
-            <button onClick={() => navigate('/account')} className="flex items-center gap-1" style={{ color: 'var(--color-accent-600)', fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase' }}>
-              {user ? <MapPin size={11} strokeWidth={1.6} /> : <CircleUserRound size={13} strokeWidth={1.6} />}
-              <span>{user ? 'Atlantic County, NJ' : 'Sign in'}</span>
-            </button>
+      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-surface)', paddingTop: 14 }}>
+        <div className="px-5" style={{ position: 'relative' }}>
+          <button onClick={() => navigate('/account')} className="flex items-center gap-1" style={{ position: 'absolute', top: 0, right: 0, color: 'var(--color-accent-600)', fontSize: 9.5, letterSpacing: '.07em', textTransform: 'uppercase' }}>
+            {user ? <MapPin size={10} strokeWidth={1.6} /> : <CircleUserRound size={12} strokeWidth={1.6} />}
+            <span>{user ? 'Atlantic County, NJ' : 'Sign in'}</span>
+          </button>
+          <div className="flex justify-center">
+            <Logo size={30} />
           </div>
-          <h1 className="pf-h" style={{ fontSize: 33, fontWeight: 400, margin: '14px 0 0' }}>Find the Church<br />for You</h1>
+          <h1 className="pf-h text-center" style={{ fontSize: 22, fontWeight: 400, margin: '10px 0 0', whiteSpace: 'nowrap' }}>Find the Church for You</h1>
         </div>
 
         <TopTabs tab="discover" />
@@ -314,16 +314,16 @@ function VisitsTab() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-surface)', paddingTop: 24 }}>
-        <div className="px-5">
-          <div className="flex items-center justify-between gap-3">
-            <Logo />
-            <div className="flex items-center gap-1" style={{ color: 'var(--color-accent-600)', fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase' }}>
-              <NotebookPen size={11} strokeWidth={1.6} />
-              <span>Your contributions</span>
-            </div>
+      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-surface)', paddingTop: 14 }}>
+        <div className="px-5" style={{ position: 'relative' }}>
+          <div className="flex items-center gap-1" style={{ position: 'absolute', top: 0, right: 0, color: 'var(--color-accent-600)', fontSize: 9.5, letterSpacing: '.07em', textTransform: 'uppercase' }}>
+            <NotebookPen size={10} strokeWidth={1.6} />
+            <span>Your contributions</span>
           </div>
-          <h1 className="pf-h" style={{ fontSize: 33, fontWeight: 400, margin: '9px 0 0' }}>
+          <div className="flex justify-center">
+            <Logo size={30} />
+          </div>
+          <h1 className="pf-h text-center" style={{ fontSize: 22, fontWeight: 400, margin: '10px 0 0' }}>
             {user ? 'Your reviews' : 'Sign up to review'}
           </h1>
         </div>
