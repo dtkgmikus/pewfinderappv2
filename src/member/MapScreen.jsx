@@ -43,6 +43,7 @@ function FlyToSelected({ selected }) {
 export function MapScreen() {
   const navigate = useNavigate()
   const [churches, setChurches] = useState([])
+  const [loadError, setLoadError] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
   const [query, setQuery] = useState('')
 
@@ -51,17 +52,16 @@ export function MapScreen() {
       setChurches(list)
       const first = list.find((c) => c.lat != null && c.lng != null && c.rated)
       if (first) setSelectedId(first.id)
-    }).catch(console.error)
+    }).catch((e) => { console.error(e); setLoadError(true) })
   }, [])
+
+  const withCoords = useMemo(() => churches.filter((c) => c.lat != null && c.lng != null), [churches])
 
   const pins = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return churches.filter((c) => {
-      if (c.lat == null || c.lng == null) return false
-      if (!q) return true
-      return `${c.name} ${c.denomination} ${c.town}`.toLowerCase().includes(q)
-    })
-  }, [churches, query])
+    if (!q) return withCoords
+    return withCoords.filter((c) => `${c.name} ${c.denomination} ${c.town}`.toLowerCase().includes(q))
+  }, [withCoords, query])
 
   const selected = churches.find((c) => c.id === selectedId)
 
@@ -98,12 +98,28 @@ export function MapScreen() {
         )}
       </div>
 
+      {loadError && (
+        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-accent-700)', fontSize: 12, color: 'var(--color-accent-700)', zIndex: 500 }}>
+          Couldn&rsquo;t load churches — check your connection and try reloading.
+        </div>
+      )}
+      {!loadError && churches.length > 0 && withCoords.length === 0 && (
+        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-accent-700)', fontSize: 12, color: 'var(--color-accent-700)', zIndex: 500 }}>
+          {churches.length} churches loaded, but none have map coordinates yet — run <code>patch-002-county-wide-schema.sql</code> then <code>patch-003-atlantic-county-churches.sql</code> in Supabase.
+        </div>
+      )}
+      {!loadError && churches.length > 0 && withCoords.length > 0 && query.trim() && pins.length === 0 && (
+        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-divider)', fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)', zIndex: 500 }}>
+          No churches match &ldquo;{query.trim()}&rdquo;.
+        </div>
+      )}
+
       {selected && (
         <div className="absolute rounded-[var(--radius-lg)] border" style={{ left: 12, right: 12, bottom: 44, background: 'var(--color-bg)', borderColor: 'var(--color-divider)', boxShadow: 'var(--shadow-lg)', padding: 14, zIndex: 500 }}>
           <div className="flex gap-3 items-start">
             <div className="plate flex-none relative" style={{ width: 54, height: 54 }}><PlatePhoto url={selected.thumbnail_photo_url} /></div>
             <div className="flex-1 min-w-0">
-              <div className="pf-h" style={{ fontSize: 18 }}>{selected.name}</div>
+              <button onClick={() => navigate(`/church/${selected.slug}`)} className="pf-h text-left" style={{ fontSize: 18, color: 'var(--color-text)' }}>{selected.name}</button>
               <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 2 }}>{selected.denomination} · {selected.town} · {selected.service_times}</div>
               {selected.rated ? (
                 <div className="flex items-center gap-[6px]" style={{ marginTop: 6, color: 'var(--color-accent-2)' }}>
