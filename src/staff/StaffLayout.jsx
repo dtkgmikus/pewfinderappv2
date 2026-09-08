@@ -51,9 +51,9 @@ export function StaffLayout() {
               className="grid items-center gap-[11px] px-[18px]"
               style={({ isActive }) => ({
                 gridTemplateColumns: '18px 1fr', padding: '9px 18px',
-                background: isActive ? 'color-mix(in srgb,var(--color-accent) 20%,transparent)' : 'transparent',
-                color: isActive ? 'var(--color-accent-100)' : 'color-mix(in srgb,white 62%,transparent)',
-                borderLeft: `2px solid ${isActive ? 'var(--color-accent)' : 'transparent'}`,
+                background: isActive ? 'color-mix(in srgb,var(--color-accent-2) 24%,transparent)' : 'transparent',
+                color: isActive ? 'var(--color-accent-2-300)' : 'color-mix(in srgb,white 62%,transparent)',
+                borderLeft: `2px solid ${isActive ? 'var(--color-accent-2-300)' : 'transparent'}`,
               })}
             >
               <Icon size={15} strokeWidth={1.6} />

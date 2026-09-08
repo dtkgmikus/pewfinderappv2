@@ -93,7 +93,7 @@ export function ChurchProfileScreen() {
         <div style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 5 }}>
           {church.denomination} · {church.street} · {church.distance_mi.toFixed(1)} mi
         </div>
-        <div className="flex items-center gap-2" style={{ marginTop: 11, color: 'var(--color-accent)' }}>
+        <div className="flex items-center gap-2" style={{ marginTop: 11, color: 'var(--color-accent-2)' }}>
           {church.rated ? (
             <span className="flex items-center gap-2">
               <StarRow value={church.avg_rating} size={15} />
@@ -157,7 +157,7 @@ export function ChurchProfileScreen() {
                   {middle.map((s) => (
                     <div key={s.key} className="flex items-center justify-between gap-[10px] border-b" style={{ paddingBottom: 8, borderColor: 'color-mix(in srgb,var(--color-text) 10%,transparent)' }}>
                       <span style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 78%,transparent)' }}>{s.label}</span>
-                      <span className="flex items-center gap-[7px]" style={{ color: 'var(--color-accent)' }}>
+                      <span className="flex items-center gap-[7px]" style={{ color: 'var(--color-accent-2)' }}>
                         <StarRow value={s.score} size={11} />
                         <span style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 60%,transparent)' }}>{s.score.toFixed(1)}</span>
                       </span>
@@ -216,7 +216,7 @@ export function ChurchProfileScreen() {
                       <div style={{ fontSize: 12.5, fontWeight: 600 }}>{r.author_display_name}</div>
                       <div style={{ fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 52%,transparent)' }}>Visited {r.visited_on}</div>
                     </div>
-                    <span style={{ flex: 'none', color: 'var(--color-accent)' }}><StarRow value={r.overall_rating} size={12} /></span>
+                    <span style={{ flex: 'none', color: 'var(--color-accent-2)' }}><StarRow value={r.overall_rating} size={12} /></span>
                   </div>
                   {r.well_text && <p style={{ margin: '10px 0 0', fontSize: 12.5, lineHeight: 1.62, color: 'color-mix(in srgb,var(--color-text) 82%,transparent)' }}>{r.well_text}</p>}
                   {r.tags?.length > 0 && (

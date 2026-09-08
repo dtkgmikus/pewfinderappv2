@@ -31,7 +31,7 @@ export function StarPicker({ value = 0, onChange, size = 30 }) {
           type="button"
           onClick={() => onChange(n)}
           className="p-[3px]"
-          style={{ color: n <= value ? 'var(--color-accent)' : 'color-mix(in srgb,var(--color-text) 30%,transparent)' }}
+          style={{ color: n <= value ? 'var(--color-accent-2)' : 'color-mix(in srgb,var(--color-text) 30%,transparent)' }}
           aria-label={`${n} star${n > 1 ? 's' : ''}`}
         >
           <Star size={size} strokeWidth={1.2} fill={n <= value ? 'currentColor' : 'none'} />

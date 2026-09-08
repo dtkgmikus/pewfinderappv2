@@ -160,7 +160,7 @@ function DiscoverTab() {
                 <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)', marginTop: 2 }}>{c.town} · {c.distance_mi.toFixed(1)} mi</div>
                 {c.rated ? (
                   <div>
-                    <div className="flex items-center gap-[6px]" style={{ marginTop: 7, color: 'var(--color-accent)' }}>
+                    <div className="flex items-center gap-[6px]" style={{ marginTop: 7, color: 'var(--color-accent-2)' }}>
                       <StarRow value={c.avg_rating} size={12} />
                       <span style={{ fontSize: 12, color: 'var(--color-text)' }}>{c.avg_rating.toFixed(1)}</span>
                       <span style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>({c.review_count})</span>
@@ -280,7 +280,7 @@ function VisitsTab() {
                 <button onClick={() => navigate(`/church/${r.churches.slug}`)} className="pf-h" style={{ fontSize: 17, color: 'var(--color-text)' }}>{r.churches.name}</button>
                 <span style={{ flex: 'none', fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{r.visited_on}</span>
               </div>
-              <div className="flex items-center gap-[7px]" style={{ marginTop: 5, color: 'var(--color-accent)' }}>
+              <div className="flex items-center gap-[7px]" style={{ marginTop: 5, color: 'var(--color-accent-2)' }}>
                 <StarRow value={r.overall_rating} size={11} />
                 <span style={{ fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
                   {r.is_anonymous ? 'Posted anonymously' : `Posted as ${profile?.name || 'you'}`}

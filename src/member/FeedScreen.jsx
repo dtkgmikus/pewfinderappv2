@@ -49,7 +49,7 @@ export function FeedScreen() {
             </div>
             <span style={{ flex: 'none', fontSize: 10, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)' }}>{timeAgo(r.created_at)}</span>
           </div>
-          <div className="flex items-center gap-[7px]" style={{ marginTop: 9, color: 'var(--color-accent)' }}>
+          <div className="flex items-center gap-[7px]" style={{ marginTop: 9, color: 'var(--color-accent-2)' }}>
             <StarRow value={r.overall_rating} size={12} />
             <span style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>Visited {r.visited_on}</span>
           </div>
