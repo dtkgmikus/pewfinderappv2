@@ -63,7 +63,7 @@ export function WriteReviewScreen() {
   if (!slug) {
     return (
       <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-        <div className="px-5" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 24, paddingBottom: 8, background: 'var(--color-surface)' }}>
+        <div className="px-5" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 24, paddingBottom: 8, background: 'var(--color-chrome)' }}>
           <h1 className="pf-h" style={{ fontSize: 22 }}>Which church did you visit?</h1>
         </div>
         <div className="flex flex-col">
@@ -115,7 +115,7 @@ export function WriteReviewScreen() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div className="flex items-center gap-[10px] border-b px-4" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 20, paddingBottom: 12, background: 'var(--color-surface)', borderColor: 'var(--color-divider)' }}>
+      <div className="flex items-center gap-[10px] border-b px-4" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 20, paddingBottom: 12, background: 'var(--color-chrome)', borderColor: 'var(--color-divider)' }}>
         <button onClick={() => navigate(-1)} style={{ width: 32, height: 32 }} className="flex items-center justify-center"><ChevronLeft size={18} strokeWidth={1.7} /></button>
         <span className="pf-h flex-1" style={{ fontSize: 17 }}>Write a review</span>
         <button onClick={handleSubmit} disabled={!canPost} style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 15, color: canPost ? 'var(--color-accent)' : 'color-mix(in srgb,var(--color-text) 42%,transparent)' }}>Post</button>

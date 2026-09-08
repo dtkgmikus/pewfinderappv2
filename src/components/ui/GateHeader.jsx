@@ -10,7 +10,7 @@ export function GateHeader({ onSignOut }) {
   return (
     <div
       className="flex items-center justify-between px-4"
-      style={{ height: 48, borderBottom: '1px solid var(--color-divider)', background: 'var(--color-surface)' }}
+      style={{ height: 48, borderBottom: '1px solid var(--color-divider)', background: 'var(--color-chrome)' }}
     >
       <Link to="/" className="flex items-center gap-1" style={{ fontSize: 12.5, color: 'var(--color-accent-700)' }}>
         <ChevronLeft size={14} strokeWidth={1.8} />

@@ -98,7 +98,7 @@ function DiscoverTab() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-surface)', paddingTop: 14 }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-chrome)', paddingTop: 14 }}>
         <div className="px-5" style={{ position: 'relative' }}>
           <button onClick={() => navigate('/account')} className="flex items-center gap-1" style={{ position: 'absolute', top: 0, right: 0, color: 'var(--color-accent-600)', fontSize: 9.5, letterSpacing: '.07em', textTransform: 'uppercase' }}>
             {user ? <MapPin size={10} strokeWidth={1.6} /> : <CircleUserRound size={12} strokeWidth={1.6} />}
@@ -314,7 +314,7 @@ function VisitsTab() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-surface)', paddingTop: 14 }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-chrome)', paddingTop: 14 }}>
         <div className="px-5" style={{ position: 'relative' }}>
           <div className="flex items-center gap-1" style={{ position: 'absolute', top: 0, right: 0, color: 'var(--color-accent-600)', fontSize: 9.5, letterSpacing: '.07em', textTransform: 'uppercase' }}>
             <NotebookPen size={10} strokeWidth={1.6} />

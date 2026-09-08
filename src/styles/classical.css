@@ -7,8 +7,14 @@
 :root {
   /* Palette: "Saffron & Plum" — warm saffron as the primary accent, a jewel-toned
      plum reserved for ratings/highlights (--color-accent-2), on a warm cream ground. */
-  --color-bg: #fdf9ec;
+  --color-bg: #fffdf6;
   --color-surface: #f2e0b8;
+  /* Dedicated nav-chrome tone (header/footer bands) — deliberately a bigger
+     step down from --color-bg than --color-surface is, so those bands read
+     as a distinct band rather than a shade of the page. Kept separate from
+     --color-surface (used for ~40 cards/panels app-wide) so pushing this
+     darker doesn't also darken every card. */
+  --color-chrome: #e3c581;
   --color-text: #271d0d;
   --color-accent: #c58614;
   --color-accent-2: #6b3566;

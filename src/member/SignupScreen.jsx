@@ -93,7 +93,7 @@ export function SignupScreen() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div className="px-5" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 20, paddingBottom: 4, background: 'var(--color-surface)' }}>
+      <div className="px-5" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 20, paddingBottom: 4, background: 'var(--color-chrome)' }}>
         <button onClick={() => navigate(-1)} className="flex items-center gap-[5px]" style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
           <ChevronLeft size={14} strokeWidth={1.7} /><span>Back</span>
         </button>

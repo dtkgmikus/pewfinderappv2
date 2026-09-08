@@ -29,7 +29,7 @@ export function FeedScreen() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div className="px-5 border-b" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 24, paddingBottom: 16, background: 'var(--color-surface)', borderColor: 'var(--color-divider)' }}>
+      <div className="px-5 border-b" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 24, paddingBottom: 16, background: 'var(--color-chrome)', borderColor: 'var(--color-divider)' }}>
         <div className="flex items-center gap-[5px]" style={{ color: 'var(--color-accent-600)', fontSize: 11.5, letterSpacing: '.1em', textTransform: 'uppercase' }}>
           <Rss size={12} strokeWidth={1.6} /><span>Recent activity</span>
         </div>

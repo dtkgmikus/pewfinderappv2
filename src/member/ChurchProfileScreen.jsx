@@ -73,7 +73,7 @@ export function ChurchProfileScreen() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div className="flex items-center gap-3 px-3" style={{ position: 'sticky', top: 0, zIndex: 2, height: 48, background: 'color-mix(in srgb,var(--color-surface) 94%,transparent)', backdropFilter: 'blur(6px)', borderBottom: '1px solid var(--color-divider)' }}>
+      <div className="flex items-center gap-3 px-3" style={{ position: 'sticky', top: 0, zIndex: 2, height: 48, background: 'color-mix(in srgb,var(--color-chrome) 94%,transparent)', backdropFilter: 'blur(6px)', borderBottom: '1px solid var(--color-divider)' }}>
         <button onClick={() => navigate(-1)} className="btn btn-icon btn-secondary flex-none flex items-center justify-center">
           <ChevronLeft size={17} strokeWidth={1.7} />
         </button>
