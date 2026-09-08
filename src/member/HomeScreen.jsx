@@ -98,7 +98,7 @@ function DiscoverTab() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-bg)', paddingTop: 24 }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-surface)', paddingTop: 24 }}>
         <div className="px-5">
           <div className="flex items-center justify-between gap-3">
             <Logo />
@@ -314,7 +314,7 @@ function VisitsTab() {
 
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-bg)', paddingTop: 24 }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-surface)', paddingTop: 24 }}>
         <div className="px-5">
           <div className="flex items-center justify-between gap-3">
             <Logo />

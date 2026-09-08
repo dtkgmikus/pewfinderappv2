@@ -13,7 +13,7 @@ export function BottomTabBar() {
   return (
     <div
       className="flex-none flex border-t px-1 pt-[9px] pb-[30px]"
-      style={{ borderColor: 'var(--color-divider)', background: 'color-mix(in srgb,var(--color-neutral-100) 96%,transparent)' }}
+      style={{ borderColor: 'var(--color-accent-2-200)', background: 'var(--color-surface)' }}
     >
       {TABS.map(({ to, end, icon: Icon, label }) => (
         <NavLink
