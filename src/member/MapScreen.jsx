@@ -1,73 +1,119 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, SlidersHorizontal, Star } from 'lucide-react'
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { Search, X } from 'lucide-react'
 import { fetchChurches } from '../lib/churches.js'
 import { PlatePhoto } from '../components/ui/PlatePhoto.jsx'
 import { StarRow } from '../components/ui/Stars.jsx'
+
+// Atlantic County, NJ roughly spans Absecon Island to the Pine Barrens —
+// this center + zoom shows the whole county on load.
+const COUNTY_CENTER = [39.4600, -74.6200]
+const COUNTY_ZOOM = 10
+
+function pinIcon({ rating, selected }) {
+  const bg = selected ? 'var(--color-accent-2)' : 'var(--color-accent)'
+  const label = rating > 0 ? rating.toFixed(1) : '—'
+  const size = selected ? 34 : 28
+  const head = selected ? 24 : 20
+  return L.divIcon({
+    className: 'pf-map-pin',
+    html: `
+      <div style="width:${size}px;height:${size}px;position:relative;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));">
+        <div style="width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;background:${bg};transform:rotate(-45deg);position:absolute;top:0;left:0;"></div>
+        <div style="width:${head}px;height:${head}px;border-radius:50%;background:var(--color-bg);position:absolute;top:${(size - head) / 2}px;left:${(size - head) / 2}px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:9.5px;font-weight:600;color:var(--color-text);">${label}</div>
+      </div>
+    `,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size],
+  })
+}
+
+/** Pans the map to the selected church without changing zoom abruptly. */
+function FlyToSelected({ selected }) {
+  const map = useMap()
+  useEffect(() => {
+    if (selected) map.flyTo([selected.lat, selected.lng], Math.max(map.getZoom(), 13), { duration: 0.5 })
+  }, [selected?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  return null
+}
 
 export function MapScreen() {
   const navigate = useNavigate()
   const [churches, setChurches] = useState([])
   const [selectedId, setSelectedId] = useState(null)
+  const [query, setQuery] = useState('')
 
   useEffect(() => {
     fetchChurches().then((list) => {
       setChurches(list)
-      const pinned = list.find((c) => c.map_x != null)
-      if (pinned) setSelectedId(pinned.id)
+      const first = list.find((c) => c.lat != null && c.lng != null && c.rated)
+      if (first) setSelectedId(first.id)
     }).catch(console.error)
   }, [])
 
-  const pins = churches.filter((c) => c.map_x != null)
+  const pins = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return churches.filter((c) => {
+      if (c.lat == null || c.lng == null) return false
+      if (!q) return true
+      return `${c.name} ${c.denomination} ${c.town}`.toLowerCase().includes(q)
+    })
+  }, [churches, query])
+
   const selected = churches.find((c) => c.id === selectedId)
 
   return (
     <div className="pf-screen flex-1 relative overflow-hidden">
-      <div className="plate pf-plate absolute inset-0 flex items-center justify-center" style={{ border: 0 }}>
-        <span style={{ fontFamily: 'ui-monospace,Menlo,monospace', fontSize: 9.5, letterSpacing: '.06em', color: 'color-mix(in srgb,var(--color-text) 40%,transparent)', textTransform: 'uppercase' }}>
-          map tile — Egg Harbor Twp
-        </span>
-      </div>
-      <div className="absolute flex items-center gap-[9px] border rounded-[var(--radius-md)]" style={{ top: 56, left: 16, right: 16, padding: '10px 12px', borderColor: 'var(--color-divider)', background: 'color-mix(in srgb,var(--color-neutral-100) 95%,transparent)' }}>
-        <Search size={15} strokeWidth={1.5} />
-        <span className="flex-1" style={{ fontSize: 13, color: 'color-mix(in srgb,var(--color-text) 45%,transparent)', fontStyle: 'italic' }}>Search this area</span>
-        <SlidersHorizontal size={15} strokeWidth={1.5} />
-      </div>
+      <MapContainer center={COUNTY_CENTER} zoom={COUNTY_ZOOM} style={{ width: '100%', height: '100%' }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <FlyToSelected selected={selected} />
+        {pins.map((p) => (
+          <Marker
+            key={p.id}
+            position={[p.lat, p.lng]}
+            icon={pinIcon({ rating: p.avg_rating, selected: p.id === selectedId })}
+            eventHandlers={{ click: () => setSelectedId(p.id) }}
+          />
+        ))}
+      </MapContainer>
 
-      {pins.map((p) => (
-        <button
-          key={p.id}
-          onClick={() => setSelectedId(p.id)}
-          className="absolute flex flex-col items-center gap-[3px]"
-          style={{ left: `${p.map_x}%`, top: `${p.map_y}%`, transform: 'translate(-50%,-100%)' }}
-        >
-          <span
-            className="flex items-center gap-1 rounded-[var(--radius-md)] border"
-            style={{
-              padding: '4px 8px', fontSize: 11, boxShadow: 'var(--shadow-sm)',
-              borderColor: p.id === selectedId ? 'var(--color-accent-700)' : 'var(--color-divider)',
-              background: p.id === selectedId ? 'var(--color-accent)' : 'var(--color-neutral-100)',
-              color: p.id === selectedId ? 'var(--color-accent-100)' : 'var(--color-text)',
-            }}
-          >
-            <Star size={10} strokeWidth={1.6} fill="currentColor" />{p.avg_rating.toFixed(1)}
-          </span>
-          <span style={{ width: 1, height: 9, background: p.id === selectedId ? 'var(--color-accent-700)' : 'var(--color-divider)' }} />
-        </button>
-      ))}
+      <div className="absolute flex items-center gap-[9px] border rounded-[var(--radius-md)]" style={{ top: 56, left: 16, right: 16, padding: '10px 12px', borderColor: 'var(--color-divider)', background: 'color-mix(in srgb,var(--color-surface) 95%,transparent)', zIndex: 500 }}>
+        <Search size={15} strokeWidth={1.5} style={{ flex: 'none' }} />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search this map"
+          className="flex-1 min-w-0 border-0 bg-transparent text-[13px] outline-none"
+        />
+        {query && (
+          <button onClick={() => setQuery('')} style={{ flex: 'none', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+            <X size={15} strokeWidth={1.6} />
+          </button>
+        )}
+      </div>
 
       {selected && (
-        <div className="absolute rounded-[var(--radius-lg)] border" style={{ left: 12, right: 12, bottom: 44, background: 'var(--color-bg)', borderColor: 'var(--color-divider)', boxShadow: 'var(--shadow-lg)', padding: 14 }}>
+        <div className="absolute rounded-[var(--radius-lg)] border" style={{ left: 12, right: 12, bottom: 44, background: 'var(--color-bg)', borderColor: 'var(--color-divider)', boxShadow: 'var(--shadow-lg)', padding: 14, zIndex: 500 }}>
           <div className="flex gap-3 items-start">
             <div className="plate flex-none relative" style={{ width: 54, height: 54 }}><PlatePhoto url={selected.thumbnail_photo_url} /></div>
             <div className="flex-1 min-w-0">
               <div className="pf-h" style={{ fontSize: 18 }}>{selected.name}</div>
-              <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 2 }}>{selected.denomination}{selected.distance_mi > 0 && ` · ${selected.distance_mi.toFixed(1)} mi`} · {selected.service_times}</div>
-              <div className="flex items-center gap-[6px]" style={{ marginTop: 6, color: 'var(--color-accent-2)' }}>
-                <StarRow value={selected.avg_rating} size={12} />
-                <span style={{ fontSize: 11.5, color: 'var(--color-text)' }}>{selected.avg_rating.toFixed(1)}</span>
-                <span style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>({selected.review_count})</span>
-              </div>
+              <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 2 }}>{selected.denomination} · {selected.town} · {selected.service_times}</div>
+              {selected.rated ? (
+                <div className="flex items-center gap-[6px]" style={{ marginTop: 6, color: 'var(--color-accent-2)' }}>
+                  <StarRow value={selected.avg_rating} size={12} />
+                  <span style={{ fontSize: 11.5, color: 'var(--color-text)' }}>{selected.avg_rating.toFixed(1)}</span>
+                  <span style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>({selected.review_count})</span>
+                </div>
+              ) : (
+                <div style={{ marginTop: 6, fontSize: 11.5, color: 'var(--color-accent-600)' }}>No reviews yet — be the first</div>
+              )}
             </div>
           </div>
           <div className="flex gap-2" style={{ marginTop: 12 }}>
