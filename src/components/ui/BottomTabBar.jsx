@@ -26,7 +26,7 @@ export function BottomTabBar() {
           {({ isActive }) => (
             <>
               <Icon size={19} strokeWidth={isActive ? 1.9 : 1.4} />
-              <span className="text-[9.5px] tracking-[.05em]">{label}</span>
+              <span className="text-[10.5px] tracking-[.05em]">{label}</span>
             </>
           )}
         </NavLink>

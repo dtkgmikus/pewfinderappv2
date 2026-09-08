@@ -159,7 +159,7 @@ function DiscoverTab() {
               value={cityValue}
               onChange={(e) => setCityValue(e.target.value)}
               className="input"
-              style={{ width: '100%', fontSize: 13.5 }}
+              style={{ width: '100%', fontSize: 14.5 }}
             >
               <option value="">All cities ({churches.length})</option>
               {ATLANTIC_COUNTY_TOWNS.map((t) => (
@@ -173,7 +173,7 @@ function DiscoverTab() {
               value={countyValue}
               onChange={(e) => setCountyValue(e.target.value)}
               className="input"
-              style={{ width: '100%', fontSize: 13.5 }}
+              style={{ width: '100%', fontSize: 14.5 }}
             >
               <option value="">All counties ({churches.length})</option>
               {counties.map((co) => (
@@ -185,7 +185,7 @@ function DiscoverTab() {
           {searchMode === 'near_me' && (
             <div className="flex items-center gap-[9px] border rounded-[var(--radius-md)] px-3 py-[10px]" style={{ borderColor: 'var(--color-divider)', background: 'var(--color-neutral-100)' }}>
               <LocateFixed size={15} strokeWidth={1.5} style={{ color: geoStatus === 'granted' ? 'var(--color-accent-2)' : undefined, flex: 'none' }} />
-              <span className="flex-1 min-w-0" style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 68%,transparent)' }}>
+              <span className="flex-1 min-w-0" style={{ fontSize: 13.5, color: 'color-mix(in srgb,var(--color-text) 68%,transparent)' }}>
                 {geoStatus === 'granted' && 'Showing distance from your location'}
                 {geoStatus === 'loading' && 'Finding you…'}
                 {geoStatus === 'denied' && "Location blocked — try City or County search instead"}
@@ -193,7 +193,7 @@ function DiscoverTab() {
                 {geoStatus === 'idle' && 'Use your location to sort churches by distance'}
               </span>
               {geoStatus !== 'loading' && (
-                <button onClick={useMyLocation} className="flex-none" style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-accent-2-700)' }}>
+                <button onClick={useMyLocation} className="flex-none" style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-accent-2-700)' }}>
                   {geoStatus === 'granted' ? 'Refresh' : 'Use my location'}
                 </button>
               )}
@@ -202,7 +202,7 @@ function DiscoverTab() {
         </div>
       </div>
 
-      <p className="m-0 px-5" style={{ padding: '17px 20px 8px', fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+      <p className="m-0 px-5" style={{ padding: '17px 20px 8px', fontSize: 11.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
         What matters most to you
       </p>
       <div className="flex flex-wrap gap-[7px] px-5">
@@ -214,7 +214,7 @@ function DiscoverTab() {
       </div>
 
       <div className="flex items-center justify-between px-5" style={{ padding: '17px 20px 9px' }}>
-        <span style={{ fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+        <span style={{ fontSize: 11.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
           {searchMode === 'name' && nameQuery.trim() && `${filtered.length} ${filtered.length === 1 ? 'match' : 'matches'} for "${nameQuery.trim()}"`}
           {searchMode === 'name' && !nameQuery.trim() && `${filtered.length} churches · Atlantic County`}
           {searchMode === 'city' && `${filtered.length} churches · ${cityValue || 'all cities'}`}
@@ -241,30 +241,30 @@ function DiscoverTab() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="pf-h" style={{ fontSize: 19 }}>{c.name}</div>
-                <div style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 3 }}>{c.denomination} · {c.street}</div>
-                <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)', marginTop: 2 }}>
+                <div style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 3 }}>{c.denomination} · {c.street}</div>
+                <div style={{ fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)', marginTop: 2 }}>
                   {c.town}{searchMode === 'near_me' && geoStatus === 'granted' && !c.distance_unknown && ` · ${c.distance_mi.toFixed(1)} mi`}
                 </div>
                 {c.rated ? (
                   <div>
                     <div className="flex items-center gap-[6px]" style={{ marginTop: 7, color: 'var(--color-accent-2)' }}>
                       <StarRow value={c.avg_rating} size={12} />
-                      <span style={{ fontSize: 12, color: 'var(--color-text)' }}>{c.avg_rating.toFixed(1)}</span>
-                      <span style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>({c.review_count})</span>
+                      <span style={{ fontSize: 13, color: 'var(--color-text)' }}>{c.avg_rating.toFixed(1)}</span>
+                      <span style={{ fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>({c.review_count})</span>
                     </div>
                     {ranked.length > 0 && (
                       <div className="flex gap-[6px] flex-wrap" style={{ marginTop: 9 }}>
-                        <span style={{ fontSize: 10.5, padding: '3px 7px', borderRadius: 'var(--radius-md)', background: 'color-mix(in srgb,var(--color-accent) 13%,transparent)', color: 'var(--color-accent-700)' }}>
+                        <span style={{ fontSize: 11.5, padding: '3px 7px', borderRadius: 'var(--radius-md)', background: 'color-mix(in srgb,var(--color-accent) 13%,transparent)', color: 'var(--color-accent-700)' }}>
                           Strong: {ranked[0].label}
                         </span>
-                        <span style={{ fontSize: 10.5, padding: '3px 7px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-divider)', color: 'color-mix(in srgb,var(--color-text) 60%,transparent)' }}>
+                        <span style={{ fontSize: 11.5, padding: '3px 7px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-divider)', color: 'color-mix(in srgb,var(--color-text) 60%,transparent)' }}>
                           Weak: {ranked[ranked.length - 1].label}
                         </span>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center gap-[5px]" style={{ marginTop: 8, color: 'var(--color-accent-600)', fontSize: 11 }}>
+                  <div className="flex items-center gap-[5px]" style={{ marginTop: 8, color: 'var(--color-accent-600)', fontSize: 12 }}>
                     <span>No reviews yet — be the first</span>
                   </div>
                 )}
@@ -278,15 +278,15 @@ function DiscoverTab() {
         <div className="text-center flex flex-col items-center gap-[9px] border-t" style={{ padding: '34px 32px', borderColor: 'var(--color-divider)' }}>
           <span style={{ color: 'var(--color-accent)' }}><SearchX size={22} strokeWidth={1.2} /></span>
           <h2 className="pf-h" style={{ fontSize: 18 }}>Nothing matches &ldquo;{nameQuery}&rdquo;</h2>
-          <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)' }}>
+          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)' }}>
             Try a denomination, a street, or a shorter piece of the name.
           </p>
-          <button onClick={() => setNameQuery('')} className="btn btn-secondary" style={{ marginTop: 4, padding: '8px 13px', fontSize: 13 }}>Clear search</button>
+          <button onClick={() => setNameQuery('')} className="btn btn-secondary" style={{ marginTop: 4, padding: '8px 13px', fontSize: 14 }}>Clear search</button>
         </div>
       )}
 
       <div style={{ height: 1, background: 'var(--color-divider)' }} />
-      <p style={{ margin: 0, padding: '18px 20px 6px', fontSize: 11.5, fontStyle: 'italic', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)', textAlign: 'center' }}>
+      <p style={{ margin: 0, padding: '18px 20px 6px', fontSize: 12.5, fontStyle: 'italic', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)', textAlign: 'center' }}>
         Only visits with a date count toward a rating.
       </p>
     </div>
@@ -333,7 +333,7 @@ function VisitsTab() {
 
       {!user && (
         <div className="px-5 pt-6 flex flex-col gap-3">
-          <p style={{ fontSize: 13, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
+          <p style={{ fontSize: 14, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
             Create an account to write reviews, save churches, and see your review history here.
           </p>
           <button onClick={() => navigate('/signup')} className="btn btn-primary-solid" style={{ padding: 12 }}>Get started</button>
@@ -345,19 +345,19 @@ function VisitsTab() {
           <div className="flex gap-[9px] px-5 pt-[18px]">
             <div className="flex-1 border rounded-[var(--radius-md)]" style={{ borderColor: 'var(--color-divider)', padding: '11px 12px' }}>
               <div className="pf-h" style={{ fontSize: 25, fontWeight: 400 }}>{reviews.length}</div>
-              <div style={{ fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>Reviews written</div>
+              <div style={{ fontSize: 11.5, letterSpacing: '.08em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>Reviews written</div>
             </div>
             <div className="flex-1 border rounded-[var(--radius-md)]" style={{ borderColor: 'var(--color-divider)', padding: '11px 12px' }}>
               <div className="pf-h" style={{ fontSize: 25, fontWeight: 400 }}>{helpfulTotal}</div>
-              <div style={{ fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>Found helpful</div>
+              <div style={{ fontSize: 11.5, letterSpacing: '.08em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>Found helpful</div>
             </div>
           </div>
 
-          <p style={{ margin: 0, padding: '24px 20px 9px', fontSize: 10.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)', borderTop: '1px solid var(--color-divider)' }}>
+          <p style={{ margin: 0, padding: '24px 20px 9px', fontSize: 11.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)', borderTop: '1px solid var(--color-divider)' }}>
             Published
           </p>
           {!loading && reviews.length === 0 && (
-            <p className="px-5" style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
+            <p className="px-5" style={{ fontSize: 13.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
               No reviews yet. Find a church in Discover and write the first one.
             </p>
           )}
@@ -365,18 +365,18 @@ function VisitsTab() {
             <div key={r.id} className="px-5 border-t" style={{ padding: '15px 20px', borderColor: 'var(--color-divider)' }}>
               <div className="flex items-baseline justify-between gap-[10px]">
                 <button onClick={() => navigate(`/church/${r.churches.slug}`)} className="pf-h" style={{ fontSize: 17, color: 'var(--color-text)' }}>{r.churches.name}</button>
-                <span style={{ flex: 'none', fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{r.visited_on}</span>
+                <span style={{ flex: 'none', fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{r.visited_on}</span>
               </div>
               <div className="flex items-center gap-[7px]" style={{ marginTop: 5, color: 'var(--color-accent-2)' }}>
                 <StarRow value={r.overall_rating} size={11} />
-                <span style={{ fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
+                <span style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
                   {r.is_anonymous ? 'Posted anonymously' : `Posted as ${profile?.name || 'you'}`}
                 </span>
               </div>
               {r.well_text && (
-                <p style={{ margin: '7px 0 0', fontSize: 12.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 78%,transparent)' }}>{r.well_text}</p>
+                <p style={{ margin: '7px 0 0', fontSize: 13.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 78%,transparent)' }}>{r.well_text}</p>
               )}
-              <div className="flex items-center gap-[5px]" style={{ marginTop: 8, fontSize: 10.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
+              <div className="flex items-center gap-[5px]" style={{ marginTop: 8, fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
                 <ThumbsUp size={11} strokeWidth={1.6} />
                 <span>{r.seed_helpful_count} found this helpful</span>
               </div>

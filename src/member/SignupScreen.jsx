@@ -83,7 +83,7 @@ export function SignupScreen() {
       <div className="pf-scroll pf-screen flex-1 flex flex-col items-center justify-center gap-4 text-center px-8">
         <ShieldCheck size={28} strokeWidth={1.3} style={{ color: 'var(--color-accent)' }} />
         <h1 className="pf-h" style={{ fontSize: 22 }}>Check your email</h1>
-        <p style={{ fontSize: 13, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
+        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
           We sent a confirmation link to {email}. Once confirmed, sign in and your preferences will be waiting.
         </p>
         <button onClick={() => navigate('/login')} className="btn btn-secondary" style={{ padding: '9px 15px' }}>Go to sign in</button>
@@ -94,11 +94,11 @@ export function SignupScreen() {
   return (
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
       <div className="px-5" style={{ position: 'sticky', top: 0, zIndex: 2, paddingTop: 20, paddingBottom: 4, background: 'var(--color-surface)' }}>
-        <button onClick={() => navigate(-1)} className="flex items-center gap-[5px]" style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
+        <button onClick={() => navigate(-1)} className="flex items-center gap-[5px]" style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
           <ChevronLeft size={14} strokeWidth={1.7} /><span>Back</span>
         </button>
         <h1 className="pf-h" style={{ fontSize: 27, fontWeight: 400, marginTop: 16 }}>Tell us what you&rsquo;re looking for</h1>
-        <p style={{ margin: '9px 0 0', fontSize: 12.5, lineHeight: 1.62, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
+        <p style={{ margin: '9px 0 0', fontSize: 13.5, lineHeight: 1.62, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
           This is how PewFinder ranks churches for you rather than showing you an alphabetical list. Churches only ever see these answers as totals, never tied to your name.
         </p>
       </div>
@@ -112,8 +112,8 @@ export function SignupScreen() {
         {SIGNUP_GROUPS.map(([groupName, options, required, multi]) => (
           <div key={groupName} className="flex flex-col gap-[9px]">
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span style={{ fontSize: 10, letterSpacing: '.09em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{groupName}</span>
-              <span style={{ fontSize: 10, color: required ? 'var(--color-accent-700)' : 'color-mix(in srgb,var(--color-text) 40%,transparent)' }}>{required ? 'required' : 'optional'}</span>
+              <span style={{ fontSize: 11, letterSpacing: '.09em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{groupName}</span>
+              <span style={{ fontSize: 11, color: required ? 'var(--color-accent-700)' : 'color-mix(in srgb,var(--color-text) 40%,transparent)' }}>{required ? 'required' : 'optional'}</span>
             </div>
             <div className="flex gap-[7px] flex-wrap">
               {options.map((opt) => {
@@ -123,7 +123,7 @@ export function SignupScreen() {
                     key={opt}
                     onClick={() => toggle(groupName, opt, multi)}
                     style={{
-                      fontSize: 12, padding: '8px 12px',
+                      fontSize: 13, padding: '8px 12px',
                       border: `1px solid ${on ? 'var(--color-accent)' : 'var(--color-divider)'}`,
                       background: on ? 'color-mix(in srgb,var(--color-accent) 13%,transparent)' : 'var(--color-surface)',
                       color: on ? 'var(--color-accent-800)' : 'color-mix(in srgb,var(--color-text) 66%,transparent)',
@@ -139,17 +139,17 @@ export function SignupScreen() {
 
         <label className="border flex gap-[10px] items-start" style={{ borderColor: 'var(--color-divider)', padding: '14px 15px', background: 'var(--color-surface)' }}>
           <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 3 }} />
-          <span style={{ fontSize: 11.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 65%,transparent)' }}>
+          <span style={{ fontSize: 12.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 65%,transparent)' }}>
             Churches see these as counts across everyone who viewed them, and nothing at all when fewer than ten people match. Your reviews can be posted under your name or anonymously — that&rsquo;s a separate choice each time.
           </span>
         </label>
 
-        {error && <p style={{ color: 'var(--color-accent-700)', fontSize: 12.5 }}>{error}</p>}
+        {error && <p style={{ color: 'var(--color-accent-700)', fontSize: 13.5 }}>{error}</p>}
 
-        <button onClick={handleSubmit} disabled={!canSubmit || busy} className="btn btn-primary-solid" style={{ padding: 14, fontSize: 13.5, textAlign: 'center', minHeight: 44 }}>
+        <button onClick={handleSubmit} disabled={!canSubmit || busy} className="btn btn-primary-solid" style={{ padding: 14, fontSize: 14.5, textAlign: 'center', minHeight: 44 }}>
           {busy ? 'Creating account…' : 'Find churches near me'}
         </button>
-        <p style={{ margin: '0 0 12px', fontSize: 11, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)', textAlign: 'center' }}>
+        <p style={{ margin: '0 0 12px', fontSize: 12, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)', textAlign: 'center' }}>
           You can change any of this later in Account.
         </p>
       </div>
@@ -160,7 +160,7 @@ export function SignupScreen() {
 function Field({ label, children }) {
   return (
     <label className="flex flex-col gap-[6px]">
-      <span style={{ fontSize: 10, letterSpacing: '.09em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{label}</span>
+      <span style={{ fontSize: 11, letterSpacing: '.09em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{label}</span>
       {children}
     </label>
   )

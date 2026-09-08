@@ -24,9 +24,9 @@ export function LoginScreen() {
       <h1 className="pf-h" style={{ fontSize: 26 }}>Sign in</h1>
       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="input" />
       <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="input" onKeyDown={(e) => e.key === 'Enter' && submit()} />
-      {error && <p style={{ color: 'var(--color-accent-700)', fontSize: 12.5 }}>{error}</p>}
+      {error && <p style={{ color: 'var(--color-accent-700)', fontSize: 13.5 }}>{error}</p>}
       <button onClick={submit} disabled={busy} className="btn btn-primary-solid" style={{ padding: 12 }}>{busy ? 'Signing in…' : 'Sign in'}</button>
-      <button onClick={() => navigate('/signup')} style={{ fontSize: 12.5, color: 'var(--color-accent-700)', textAlign: 'center' }}>
+      <button onClick={() => navigate('/signup')} style={{ fontSize: 13.5, color: 'var(--color-accent-700)', textAlign: 'center' }}>
         New here? Create an account
       </button>
     </div>

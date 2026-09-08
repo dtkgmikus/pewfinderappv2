@@ -99,17 +99,17 @@ export function MapScreen() {
       </div>
 
       {loadError && (
-        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-accent-700)', fontSize: 12, color: 'var(--color-accent-700)', zIndex: 500 }}>
+        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-accent-700)', fontSize: 13, color: 'var(--color-accent-700)', zIndex: 500 }}>
           Couldn&rsquo;t load churches — check your connection and try reloading.
         </div>
       )}
       {!loadError && churches.length > 0 && withCoords.length === 0 && (
-        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-accent-700)', fontSize: 12, color: 'var(--color-accent-700)', zIndex: 500 }}>
+        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-accent-700)', fontSize: 13, color: 'var(--color-accent-700)', zIndex: 500 }}>
           {churches.length} churches loaded, but none have map coordinates yet — run <code>patch-002-county-wide-schema.sql</code> then <code>patch-003-atlantic-county-churches.sql</code> in Supabase.
         </div>
       )}
       {!loadError && churches.length > 0 && withCoords.length > 0 && query.trim() && pins.length === 0 && (
-        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-divider)', fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)', zIndex: 500 }}>
+        <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-divider)', fontSize: 13, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)', zIndex: 500 }}>
           No churches match &ldquo;{query.trim()}&rdquo;.
         </div>
       )}
@@ -120,21 +120,21 @@ export function MapScreen() {
             <div className="plate flex-none relative" style={{ width: 54, height: 54 }}><PlatePhoto url={selected.thumbnail_photo_url} /></div>
             <div className="flex-1 min-w-0">
               <button onClick={() => navigate(`/church/${selected.slug}`)} className="pf-h text-left" style={{ fontSize: 18, color: 'var(--color-text)' }}>{selected.name}</button>
-              <div style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 2 }}>{selected.denomination} · {selected.town} · {selected.service_times}</div>
+              <div style={{ fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 2 }}>{selected.denomination} · {selected.town} · {selected.service_times}</div>
               {selected.rated ? (
                 <div className="flex items-center gap-[6px]" style={{ marginTop: 6, color: 'var(--color-accent-2)' }}>
                   <StarRow value={selected.avg_rating} size={12} />
-                  <span style={{ fontSize: 11.5, color: 'var(--color-text)' }}>{selected.avg_rating.toFixed(1)}</span>
-                  <span style={{ fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>({selected.review_count})</span>
+                  <span style={{ fontSize: 12.5, color: 'var(--color-text)' }}>{selected.avg_rating.toFixed(1)}</span>
+                  <span style={{ fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>({selected.review_count})</span>
                 </div>
               ) : (
-                <div style={{ marginTop: 6, fontSize: 11.5, color: 'var(--color-accent-600)' }}>No reviews yet — be the first</div>
+                <div style={{ marginTop: 6, fontSize: 12.5, color: 'var(--color-accent-600)' }}>No reviews yet — be the first</div>
               )}
             </div>
           </div>
           <div className="flex gap-2" style={{ marginTop: 12 }}>
-            <button onClick={() => navigate(`/church/${selected.slug}`)} className="btn btn-primary-solid flex-1" style={{ padding: 9, fontSize: 13.5 }}>View profile</button>
-            <button onClick={() => navigate(`/write?church=${selected.slug}`)} className="btn btn-secondary flex-1" style={{ padding: 9, fontSize: 13.5 }}>Review it</button>
+            <button onClick={() => navigate(`/church/${selected.slug}`)} className="btn btn-primary-solid flex-1" style={{ padding: 9, fontSize: 14.5 }}>View profile</button>
+            <button onClick={() => navigate(`/write?church=${selected.slug}`)} className="btn btn-secondary flex-1" style={{ padding: 9, fontSize: 14.5 }}>Review it</button>
           </div>
         </div>
       )}
