@@ -1,0 +1,76 @@
+/* Re-declares the original PewFinder "Saffron & Plum" classical tokens,
+   scoped under .pf-legacy-theme — wraps the "Find a Church" section only
+   (see ChurchLayout.jsx) so it keeps its calmer, classical feel while the
+   rest of the app uses the new bold Get-God tokens from theme.css. Same
+   custom-property names, deliberately: every component below this wrapper
+   re-themes for free without any per-component change. */
+
+.pf-legacy-theme {
+  --color-bg: #fffdf6;
+  --color-surface: #f2e0b8;
+  --color-chrome: #e3c581;
+  --color-text: #271d0d;
+  --color-accent: #c58614;
+  --color-accent-2: #6b3566;
+  --color-divider: color-mix(in srgb, #271d0d 16%, transparent);
+
+  --color-neutral-100: #f8f0df;
+  --color-neutral-200: #efe2c5;
+  --color-neutral-300: #ddc9a0;
+  --color-neutral-400: #c2ac7c;
+  --color-neutral-500: #a3895d;
+  --color-neutral-600: #836c46;
+  --color-neutral-700: #64502f;
+  --color-neutral-800: #423521;
+  --color-neutral-900: #2a2114;
+
+  --color-accent-100: #fff3d6;
+  --color-accent-200: #ffe094;
+  --color-accent-300: #f7c452;
+  --color-accent-400: #eab02a;
+  --color-accent-500: #d99510;
+  --color-accent-600: #b17a0a;
+  --color-accent-700: #855c07;
+  --color-accent-800: #593d05;
+  --color-accent-900: #332403;
+
+  --color-accent-2-100: #f6ecf5;
+  --color-accent-2-200: #e5c7de;
+  --color-accent-2-300: #cf9ac0;
+  --color-accent-2-400: #a8699a;
+  --color-accent-2-500: #855177;
+  --color-accent-2-600: #6b3566;
+  --color-accent-2-700: #522650;
+  --color-accent-2-800: #391a39;
+  --color-accent-2-900: #200f20;
+
+  --font-heading: "Cormorant Garamond", system-ui, sans-serif;
+  --font-heading-weight: 600;
+  --font-body: "Lora", system-ui, sans-serif;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 7px;
+
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+/* This section's own button/link colors were tuned for saffron, not the
+   app-wide raspberry — restore those specific rules within the wrapper. */
+.pf-legacy-theme a { color: var(--color-accent); }
+.pf-legacy-theme a:hover { color: var(--color-accent-700); }
+.pf-legacy-theme :focus-visible { outline-color: var(--color-accent); }
+.pf-legacy-theme ::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+.pf-legacy-theme .btn-primary { color: var(--color-accent); border-color: var(--color-accent); }
+.pf-legacy-theme .btn-primary:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
+.pf-legacy-theme .btn-primary:active { background: color-mix(in srgb, var(--color-accent) 22%, transparent); }
+.pf-legacy-theme .btn-primary-solid { background: var(--color-accent-700); color: var(--color-surface); border-color: var(--color-accent-700); }
+.pf-legacy-theme .btn-primary-solid:hover { background: var(--color-accent-800); }
+.pf-legacy-theme .btn-ghost { color: var(--color-accent); }
+.pf-legacy-theme .btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.pf-legacy-theme .input { caret-color: var(--color-accent); }
+.pf-legacy-theme .input:focus-visible { border-color: var(--color-accent); }
+.pf-legacy-theme .pf-tap:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.pf-legacy-theme .plate { filter: sepia(0.22) saturate(0.82) contrast(1.05); }

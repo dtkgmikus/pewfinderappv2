@@ -28,7 +28,7 @@ export function StaffLayout() {
         <div className="flex-1 flex items-center justify-center p-8" style={{ overflowY: 'auto' }}>
           <div className="max-w-[440px] text-center flex flex-col gap-3">
             <h1 className="pf-h" style={{ fontSize: 22 }}>Not authorized</h1>
-            <p style={{ fontSize: 13.5, color: 'color-mix(in srgb,var(--color-text) 60%,transparent)' }}>Your account isn&rsquo;t on the PewFinder staff list. Ask an admin to add you.</p>
+            <p style={{ fontSize: 13.5, color: 'color-mix(in srgb,var(--color-text) 60%,transparent)' }}>Your account isn&rsquo;t on the Get-God staff list. Ask an admin to add you.</p>
           </div>
         </div>
       </div>
@@ -95,8 +95,8 @@ function StaffAuthForm() {
       <GateHeader />
       <div className="flex-1 flex items-center justify-center" style={{ overflowY: 'auto' }}>
       <div className="w-full max-w-[380px] flex flex-col gap-4 p-8 border" style={{ borderColor: 'var(--color-divider)', background: 'var(--color-surface)' }}>
-        <span style={{ fontFamily: 'var(--font-heading)', fontSize: 18 }}>PewFinder staff sign-in</span>
-        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="you@pewfinder.app" className="input" />
+        <span style={{ fontFamily: 'var(--font-heading)', fontSize: 18 }}>Get-God staff sign-in</span>
+        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="you@getgod.com" className="input" />
         <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" className="input" onKeyDown={(e) => e.key === 'Enter' && submit()} />
         {error && <p style={{ color: 'var(--color-accent-700)', fontSize: 12.5 }}>{error}</p>}
         <button onClick={submit} className="btn btn-primary-solid" style={{ padding: 12 }}>Sign in</button>

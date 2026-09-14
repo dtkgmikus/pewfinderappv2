@@ -25,9 +25,10 @@ export function TeamScreen() {
   const invite = async () => {
     setError('')
     if (!email.trim()) return
-    const { data: profileId } = await supabase.rpc('find_profile_id_by_email', { lookup_email: email.trim() })
+    const { data: profileId, error: rpcError } = await supabase.rpc('find_profile_id_by_email', { lookup_email: email.trim() })
+    if (rpcError) { setError(rpcError.message); return }
     if (!profileId) {
-      setError('No PewFinder account with that email yet — ask them to sign up first, then invite them.')
+      setError('No Get-God account with that email yet — ask them to sign up first, then invite them.')
       return
     }
     const { error: err } = await supabase.from('church_staff').insert({ church_id: church.id, profile_id: profileId, role: inviteRole })

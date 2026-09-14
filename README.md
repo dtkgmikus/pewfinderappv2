@@ -27,6 +27,91 @@ Supabase (Postgres + Auth).
    key (Project Settings → API).
 4. `npm install && npm run dev`.
 
+### Billing (Stripe)
+
+Pro is real, paid billing — not a toggle in the console. `create-checkout-session`
+and `create-billing-portal-session` are the only things the browser ever
+calls; `stripe-webhook` is the only thing that ever marks a church Pro, and
+only once Stripe confirms payment. See `supabase/functions/`.
+
+1. **Apply `supabase/patch-009-stripe-columns.sql`** (adds the Stripe
+   customer/subscription id columns `subscriptions` needs) — after
+   `schema.sql`/`seed.sql` and patch-001 through patch-008.
+2. **In Stripe**, create one recurring Price for PewFinder Pro ($50/month)
+   and note its price id (`price_...`).
+3. **Deploy the three edge functions** (Supabase CLI, from the repo root):
+   ```
+   supabase functions deploy create-checkout-session
+   supabase functions deploy create-billing-portal-session
+   supabase functions deploy stripe-webhook --no-verify-jwt
+   ```
+   `stripe-webhook` needs `--no-verify-jwt` — Stripe calls it directly, with
+   no Supabase session, and authenticates the request itself via the
+   Stripe-Signature header instead.
+4. **Set these as Supabase Edge Function secrets** (`supabase secrets set
+   KEY=value`, or Dashboard → Edge Functions → Secrets) — never as
+   `VITE_...` variables, which ship to the browser:
+   - `STRIPE_SECRET_KEY` — your Stripe secret key.
+   - `STRIPE_PRO_PRICE_ID` — the price id from step 2.
+   - `STRIPE_WEBHOOK_SECRET` — from step 5 below.
+   - `SITE_URL` — where the app is deployed (e.g. `https://pewfinder.app`,
+     no trailing slash) — used to build Checkout/portal redirect URLs.
+   - `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` are
+     already provided automatically inside deployed Edge Functions; only set
+     these yourself if testing with `supabase functions serve` locally.
+5. **In Stripe, add a webhook endpoint** pointing at the deployed
+   `stripe-webhook` function's URL, subscribed to: `checkout.session.completed`,
+   `customer.subscription.updated`, `customer.subscription.deleted`,
+   `invoice.payment_failed`, `invoice.payment_succeeded`. Copy the signing
+   secret it gives you into `STRIPE_WEBHOOK_SECRET` above.
+6. **Enable the Stripe customer portal** (Stripe Dashboard → Settings →
+   Billing → Customer portal) so `create-billing-portal-session` has
+   something to open.
+
+### Video (Mux)
+
+Question and answer videos are uploaded straight from the browser to Mux —
+this backend never handles the video bytes. `create-mux-upload-url` is the
+only thing the browser calls; `mux-webhook` is the only thing that ever
+marks a video 'ready' (and reports its real duration), once Mux has
+actually finished processing it. See `supabase/functions/` and
+`patch-010-mux-assets.sql`.
+
+1. **Apply `supabase/patch-010-mux-assets.sql` and `patch-011-qa-content.sql`**
+   (in that order, after patch-001 through patch-009).
+2. **Create a [Mux](https://mux.com) account** and grab an API access token
+   (Settings → API Access Tokens) — note the Token ID and Token Secret.
+3. **Deploy the two edge functions**:
+   ```
+   supabase functions deploy create-mux-upload-url
+   supabase functions deploy mux-webhook --no-verify-jwt
+   ```
+   `mux-webhook` needs `--no-verify-jwt` for the same reason `stripe-webhook`
+   does — Mux calls it directly with no Supabase session, and it
+   authenticates the request itself via the Mux-Signature header.
+4. **Set these as Supabase Edge Function secrets**:
+   - `MUX_TOKEN_ID` / `MUX_TOKEN_SECRET` — from step 2.
+   - `MUX_WEBHOOK_SECRET` — from step 5 below.
+   - `SITE_URL` — already set if you did the Stripe setup above; also used
+     as the CORS origin Mux allows direct uploads from.
+5. **In the Mux Dashboard, add a webhook** pointing at the deployed
+   `mux-webhook` function's URL, subscribed to at least `video.asset.ready`
+   and `video.asset.errored`. Copy its signing secret into
+   `MUX_WEBHOOK_SECRET` above.
+
+The 5-minute cap on answer (and question) videos is enforced in the
+database (`patch-010`'s `enforce_mux_duration_cap` trigger) — no code path
+can mark an over-length video 'ready', regardless of what any client or
+edge function sends it.
+
+### Mobile (iOS / Android)
+
+The same app wraps into native iOS and Android builds via Capacitor —
+config and scripts are already in the repo (`capacitor.config.ts`,
+`npm run cap:add` / `cap:sync` / `cap:ios` / `cap:android`). See
+[`MOBILE.md`](./MOBILE.md), including why Stripe checkout is intentionally
+disabled inside the native app.
+
 ### Adding staff accounts
 
 Church staff sign up and claim a church themselves through `/admin`. PewFinder
@@ -59,8 +144,9 @@ person can be a member, a church's Responder, and nothing else, all at once.
   (reply / flag with the keep-reply-vs-ask-us-to-remove split), profile
   (basics / times / programs / photos & video / links), sermon notes,
   promote (radius + towns + channels, submitted for staff review), insights
-  (aggregate-only, 10-person floor), team roles, billing. Sermon notes,
-  media/links, promote, and insights are gated behind the $50/mo Pro plan.
+  (aggregate-only, 10-person floor), team roles, billing. Replying to
+  reviews, sermon notes, media/links, promote, and insights are gated
+  behind the $50/mo Pro plan (real Stripe billing — see Setup above).
 - **Staff portal** (`/staff`) — queue, flagged reviews (four outcomes: keep,
   remove, remove the naming, remove + strike), claims, promotions, a church
   directory with account actions, a member directory with moderation
@@ -86,10 +172,13 @@ state:
 - **"Your visits" pending-visits list** (visited-but-not-yet-reviewed) was
   prototype flavor with no underlying data model; the real Visits tab shows
   your actual published reviews instead.
-- **Billing** persists plan/subscription state for real, but there's no
-  Stripe (or other processor) integration yet — upgrading/downgrading in
-  the console doesn't move real money. That's the next piece to wire up
-  before this goes live.
+- **Billing** is real Stripe Checkout + a webhook (`supabase/functions/`) —
+  upgrading redirects to actual Stripe Checkout, and only Stripe confirming
+  payment (via `stripe-webhook`) ever marks a church Pro; the browser can't
+  grant itself Pro by calling the API directly (enforced by
+  `patch-007-security-hardening.sql`'s `protect_church_admin_fields` trigger
+  and the `subscriptions` RLS policy). Cancelling/updating a card goes
+  through Stripe's own hosted billing portal.
 - **Team invites** look up the invitee by email among existing PewFinder
   accounts (via a minimal security-definer RPC) rather than sending an
   invite email, since that needs a server-side email step this pass didn't
@@ -102,7 +191,6 @@ state:
 
 ## Known follow-ups
 
-- Stripe (or equivalent) for real Pro billing.
 - Real photo/file upload (Supabase Storage) instead of pasting an image URL.
 - Real geocoding for the map (currently static placement percentages).
 - Email delivery for staff invites, claim decisions, flag decisions, and

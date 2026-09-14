@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { LandingScreen } from './marketing/LandingScreen.jsx'
 import { MemberLayout } from './member/MemberLayout.jsx'
 import { HomeScreen } from './member/HomeScreen.jsx'
 import { ChurchProfileScreen } from './member/ChurchProfileScreen.jsx'
@@ -8,6 +9,13 @@ import { MapScreen } from './member/MapScreen.jsx'
 import { SignupScreen } from './member/SignupScreen.jsx'
 import { AccountScreen } from './member/AccountScreen.jsx'
 import { LoginScreen } from './member/LoginScreen.jsx'
+
+import { AskLayout } from './ask/AskLayout.jsx'
+import { AskFeedScreen } from './ask/AskFeedScreen.jsx'
+import { AskSearchScreen } from './ask/AskSearchScreen.jsx'
+import { AskComposerScreen } from './ask/AskComposerScreen.jsx'
+import { QuestionDetailScreen } from './ask/QuestionDetailScreen.jsx'
+import { ModeratorApplyScreen } from './ask/ModeratorApplyScreen.jsx'
 
 import { AdminLayout } from './church-admin/AdminLayout.jsx'
 import { DashboardScreen } from './church-admin/DashboardScreen.jsx'
@@ -34,7 +42,21 @@ import { PolicyScreen } from './staff/PolicyScreen.jsx'
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<MemberLayout />}>
+      <Route path="/welcome" element={<LandingScreen />} />
+
+      {/* Ask is the primary experience now — questions about God, answered on
+          video. Church-finder (the app's original purpose) lives at /churches
+          as a secondary feature with its own calmer, classical look. */}
+      <Route path="/" element={<AskLayout />}>
+        <Route index element={<AskFeedScreen />} />
+        <Route path="search" element={<AskSearchScreen />} />
+        <Route path="ask" element={<AskComposerScreen />} />
+        <Route path="question/:id" element={<QuestionDetailScreen />} />
+        <Route path="account" element={<AccountScreen />} />
+        <Route path="moderate/apply" element={<ModeratorApplyScreen />} />
+      </Route>
+
+      <Route path="/churches" element={<MemberLayout />}>
         <Route index element={<HomeScreen />} />
         <Route path="church/:slug" element={<ChurchProfileScreen />} />
         <Route path="write" element={<WriteReviewScreen />} />

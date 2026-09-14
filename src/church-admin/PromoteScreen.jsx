@@ -121,7 +121,7 @@ export function PromoteScreen() {
           <span style={{ fontSize: 12.5, lineHeight: 1.55, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>members inside your region (estimate, based on town population).</span>
         </div>
         <button onClick={submit} className="btn btn-primary-solid" style={{ padding: '13px 16px', fontSize: 13.5 }}>Submit for review</button>
-        <p style={{ margin: 0, fontSize: 11.5, lineHeight: 1.55, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>PewFinder reviews new campaigns, usually within a day.</p>
+        <p style={{ margin: 0, fontSize: 11.5, lineHeight: 1.55, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>Get-God reviews new campaigns, usually within a day.</p>
       </div>
     </div>
   )

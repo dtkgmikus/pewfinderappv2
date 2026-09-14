@@ -14,7 +14,7 @@ export function GateHeader({ onSignOut }) {
     >
       <Link to="/" className="flex items-center gap-1" style={{ fontSize: 12.5, color: 'var(--color-accent-700)' }}>
         <ChevronLeft size={14} strokeWidth={1.8} />
-        <span>PewFinder</span>
+        <span>Get-God</span>
       </Link>
       {onSignOut && (
         <button onClick={onSignOut} style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>

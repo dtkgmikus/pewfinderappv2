@@ -1,0 +1,186 @@
+/* Get-God.com design system — tokens and component classes.
+   Same custom-property names and component classes (.btn, .input, .tag,
+   .pf-h, etc.) as the original PewFinder "classical" system this replaces
+   at :root scope, so every existing screen re-themes for free — nothing
+   below is renamed, only re-valued. The `.pf-legacy-theme` wrapper
+   (legacy-classical.css) re-declares the OLD values for the "Find a
+   Church" section, which deliberately keeps its calmer, classical feel.
+   The `pf-` class prefix is a holdover from "PewFinder" — left as-is to
+   avoid a mechanical rename across every screen; revisit if useful later.
+
+   Palette concept — "Revelation & Ask": a deep indigo-ink ground (the dark
+   of a hard question) with two accents that split by role rather than one
+   lone pop: warm gold ("revelation" — answers, moderator badges, anything
+   that signals "this is settled/official") and a deep raspberry ("ask" —
+   the bold, human energy of posting a question, primary CTAs). Google
+   Fonts @import lives in index.css, since @import must precede all other
+   rules and this file is itself @import-ed after Tailwind. */
+
+:root {
+  --color-bg: #f5f3f8;
+  --color-surface: #eae7f1;
+  --color-chrome: #dfdaeb;
+  --color-text: #18152a;
+  --color-accent: #cf9a2e;      /* gold — "revelation" */
+  --color-accent-2: #a8214a;    /* raspberry — "ask" */
+  --color-divider: color-mix(in srgb, #18152a 14%, transparent);
+
+  --color-neutral-100: #f2f0f7;
+  --color-neutral-200: #e4e1ee;
+  --color-neutral-300: #cbc6dc;
+  --color-neutral-400: #a9a2c1;
+  --color-neutral-500: #8981a6;
+  --color-neutral-600: #6b6488;
+  --color-neutral-700: #4f4a68;
+  --color-neutral-800: #322e46;
+  --color-neutral-900: #1c1930;
+
+  --color-accent-100: #faf1da;
+  --color-accent-200: #f3ddac;
+  --color-accent-300: #e8c374;
+  --color-accent-400: #dcaa4c;
+  --color-accent-500: #cf9a2e;
+  --color-accent-600: #a97b1f;
+  --color-accent-700: #815c16;
+  --color-accent-800: #593f0f;
+  --color-accent-900: #362609;
+
+  --color-accent-2-100: #fbe8ee;
+  --color-accent-2-200: #f2bfd0;
+  --color-accent-2-300: #e389a6;
+  --color-accent-2-400: #cf5a80;
+  --color-accent-2-500: #a8214a;
+  --color-accent-2-600: #8a1a3d;
+  --color-accent-2-700: #6c1531;
+  --color-accent-2-800: #4d0f23;
+  --color-accent-2-900: #300916;
+
+  --font-heading: "Fraunces", Georgia, serif;
+  --font-heading-weight: 700;
+  --font-body: "Archivo", system-ui, sans-serif;
+
+  --space-1: 4.6px;
+  --space-2: 9.2px;
+  --space-3: 13.8px;
+  --space-4: 18.4px;
+  --space-6: 27.6px;
+  --space-8: 36.8px;
+
+  /* Rounder than the classical system's 2/4/7px — reads as a modern app
+     rather than an engraved plate. */
+  --radius-sm: 5px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #0a0818 20%, transparent);
+  --shadow-md: 0 4px 14px color-mix(in srgb, #0a0818 22%, transparent);
+  --shadow-lg: 0 16px 40px color-mix(in srgb, #0a0818 28%, transparent);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0; background: var(--color-bg); color: var(--color-text);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.55; font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  line-height: 1.08; letter-spacing: -0.01em; margin: 0 0 var(--space-2);
+}
+h6 { letter-spacing: 0.08em; text-transform: uppercase; }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-accent-700); text-underline-offset: 3px; }
+a:hover { color: var(--color-accent-800); }
+img { display: block; max-width: 100%; }
+button { font-family: inherit; cursor: pointer; background: none; border: 0; color: inherit; padding: 0; }
+input, textarea, select { font-family: inherit; }
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent-2); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent-2) 26%, transparent); }
+
+.plate {
+  box-sizing: border-box;
+  border: 6px solid var(--color-surface); outline: 1px solid var(--color-divider);
+}
+.plate-flat { border: 0; outline: 1px solid var(--color-divider); }
+
+.hr { height: 1px; border: 0; margin: var(--space-4) 0; background: var(--color-divider); }
+
+/* — buttons — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text);
+  background: transparent; border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: var(--radius-md);
+}
+.btn svg { display: block; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+/* Primary actions ("Ask", "Post an answer") take the raspberry — the bold
+   half of the palette — not the gold, which is reserved for things that
+   read as settled/official (moderator badges, published states). */
+.btn-primary { color: var(--color-accent-2-600); border-color: var(--color-accent-2-600); }
+.btn-primary:hover { background: color-mix(in srgb, var(--color-accent-2) 12%, transparent); }
+.btn-primary:active { background: color-mix(in srgb, var(--color-accent-2) 22%, transparent); }
+.btn-primary-solid { background: var(--color-accent-2-600); color: white; border-color: var(--color-accent-2-600); }
+.btn-primary-solid:hover { background: var(--color-accent-2-700); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.btn-ghost { color: var(--color-accent-2-600); padding-inline: var(--space-1); }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent-2) 10%, transparent); }
+.btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; }
+.btn-block { width: 100%; margin-top: var(--space-2); }
+
+/* — forms — */
+.field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.label-eyebrow {
+  font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 52%, transparent);
+}
+.input {
+  width: 100%; min-height: 36px; padding: 10px 12px; font: inherit;
+  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent-2); outline-offset: 0; }
+textarea.input { min-height: 90px; resize: vertical; }
+
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px; border-radius: calc(var(--radius-md) * 0.75);
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+.tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent-700); }
+
+/* — pewfinder-specific helpers, ported from the prototype's own <style> block — */
+.pf-scroll { overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+.pf-scroll::-webkit-scrollbar { display: none; }
+.pf-scroll-thin { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+.pf-h {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  letter-spacing: -.01em; line-height: 1.08; margin: 0;
+}
+.pf-tap:active { background: color-mix(in srgb, var(--color-accent-2) 16%, transparent); }
+@keyframes pf-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+.pf-screen { animation: pf-in .24s ease both; }
+.pf-plate { background: repeating-linear-gradient(135deg, var(--color-neutral-300) 0 5px, var(--color-neutral-200) 5px 10px); }
+
+/* — badges specific to the Ask experience — */
+.badge-moderator {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-body); font-weight: 600; font-size: 10.5px;
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: 3px 9px 3px 7px; border-radius: 99px;
+  background: var(--color-accent-100); color: var(--color-accent-800);
+}

@@ -2,11 +2,11 @@ import { NavLink } from 'react-router-dom'
 import { Compass, Map, SquarePen, Rss, CircleUserRound } from 'lucide-react'
 
 const TABS = [
-  { to: '/', end: true, icon: Compass, label: 'Discover' },
-  { to: '/map', icon: Map, label: 'Map' },
-  { to: '/write', icon: SquarePen, label: 'Review' },
-  { to: '/feed', icon: Rss, label: 'Feed' },
-  { to: '/account', icon: CircleUserRound, label: 'Account' },
+  { to: '/churches', end: true, icon: Compass, label: 'Discover' },
+  { to: '/churches/map', icon: Map, label: 'Map' },
+  { to: '/churches/write', icon: SquarePen, label: 'Review' },
+  { to: '/churches/feed', icon: Rss, label: 'Feed' },
+  { to: '/churches/account', icon: CircleUserRound, label: 'Account' },
 ]
 
 export function BottomTabBar() {

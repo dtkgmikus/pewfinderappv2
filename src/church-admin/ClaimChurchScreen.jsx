@@ -47,7 +47,7 @@ export function ClaimChurchScreen({ onClaimed }) {
             <Clock size={26} strokeWidth={1.4} style={{ color: 'var(--color-accent-700)' }} />
             <h1 className="pf-h" style={{ fontSize: 24 }}>Claim submitted for {pendingClaim.churches?.name}</h1>
             <p style={{ fontSize: 13.5, lineHeight: 1.65, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
-              PewFinder staff review claims within a day or two. You&rsquo;ll get an email either way. Submitted via {pendingClaim.method.replace('_', ' ')}.
+              Get-God staff review claims within a day or two. You&rsquo;ll get an email either way. Submitted via {pendingClaim.method.replace('_', ' ')}.
             </p>
           </div>
         </div>

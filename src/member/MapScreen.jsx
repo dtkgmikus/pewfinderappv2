@@ -119,7 +119,7 @@ export function MapScreen() {
           <div className="flex gap-3 items-start">
             <div className="plate flex-none relative" style={{ width: 54, height: 54 }}><PlatePhoto url={selected.thumbnail_photo_url} /></div>
             <div className="flex-1 min-w-0">
-              <button onClick={() => navigate(`/church/${selected.slug}`)} className="pf-h text-left" style={{ fontSize: 18, color: 'var(--color-text)' }}>{selected.name}</button>
+              <button onClick={() => navigate(`/churches/church/${selected.slug}`)} className="pf-h text-left" style={{ fontSize: 18, color: 'var(--color-text)' }}>{selected.name}</button>
               <div style={{ fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 2 }}>{selected.denomination} · {selected.town} · {selected.service_times}</div>
               {selected.rated ? (
                 <div className="flex items-center gap-[6px]" style={{ marginTop: 6, color: 'var(--color-accent-2)' }}>
@@ -133,8 +133,8 @@ export function MapScreen() {
             </div>
           </div>
           <div className="flex gap-2" style={{ marginTop: 12 }}>
-            <button onClick={() => navigate(`/church/${selected.slug}`)} className="btn btn-primary-solid flex-1" style={{ padding: 9, fontSize: 14.5 }}>View profile</button>
-            <button onClick={() => navigate(`/write?church=${selected.slug}`)} className="btn btn-secondary flex-1" style={{ padding: 9, fontSize: 14.5 }}>Review it</button>
+            <button onClick={() => navigate(`/churches/church/${selected.slug}`)} className="btn btn-primary-solid flex-1" style={{ padding: 9, fontSize: 14.5 }}>View profile</button>
+            <button onClick={() => navigate(`/churches/write?church=${selected.slug}`)} className="btn btn-secondary flex-1" style={{ padding: 9, fontSize: 14.5 }}>Review it</button>
           </div>
         </div>
       )}

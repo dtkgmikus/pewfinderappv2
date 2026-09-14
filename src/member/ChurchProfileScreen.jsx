@@ -31,10 +31,11 @@ export function ChurchProfileScreen() {
       if (!alive || !c) return
       setChurch(c)
       const [rev, notesRes] = await Promise.all([
-        fetchReviewsForChurch(c.id),
+        fetchReviewsForChurch(c.id, user?.id),
         supabase.from('sermon_notes').select('*').eq('church_id', c.id).order('date_preached', { ascending: false }),
       ])
       setReviews(rev)
+      setHelpfulOn(Object.fromEntries(rev.map((r) => [r.id, !!r.helpfulOn])))
       setNotes(notesRes.data || [])
       if (user) {
         const { data } = await supabase.from('saved_churches').select('church_id').eq('church_id', c.id).eq('member_id', user.id).maybeSingle()
@@ -52,21 +53,26 @@ export function ChurchProfileScreen() {
   if (!church) return <div className="flex-1 pf-scroll pf-screen" style={{ padding: 60 }}>Loading…</div>
 
   const toggleSave = async () => {
-    if (!user) return navigate('/signup')
+    if (!user) return navigate('/churches/signup')
     if (saved) await supabase.from('saved_churches').delete().eq('church_id', church.id).eq('member_id', user.id)
     else await supabase.from('saved_churches').insert({ church_id: church.id, member_id: user.id })
     setSaved(!saved)
   }
 
+  // r.helpfulCount already includes this member's own vote if helpfulOn was
+  // hydrated true, so the displayed count tracks the *change* from that
+  // hydrated baseline rather than always assuming it started at zero.
+  const displayHelpfulCount = (r) => (r.helpfulCount - (r.helpfulOn ? 1 : 0)) + (helpfulOn[r.id] ? 1 : 0)
+
   const onHelpful = async (r) => {
-    if (!user) return navigate('/signup')
+    if (!user) return navigate('/churches/signup')
     const on = !!helpfulOn[r.id]
-    await toggleHelpful(r.id, user.id, on)
-    setHelpfulOn((s) => ({ ...s, [r.id]: !on }))
+    const result = await toggleHelpful(r.id, user.id, on)
+    if (result.ok) setHelpfulOn((s) => ({ ...s, [r.id]: result.on }))
   }
 
   const onFlag = async (r) => {
-    if (!user) return navigate('/signup')
+    if (!user) return navigate('/churches/signup')
     await flagReviewAsMember(r.id, user.id, 'Reported by a member')
     setFlagged((s) => ({ ...s, [r.id]: true }))
   }
@@ -113,8 +119,8 @@ export function ChurchProfileScreen() {
       </div>
 
       <div className="flex gap-[9px] px-5" style={{ paddingTop: 15 }}>
-        <button onClick={() => navigate(`/write?church=${church.slug}`)} className="btn btn-primary-solid flex-1" style={{ padding: 10, fontSize: 15 }}>Write a review</button>
-        <button onClick={() => navigate('/map')} className="btn btn-secondary flex-none" style={{ padding: '10px 13px', fontSize: 15 }}>Directions</button>
+        <button onClick={() => navigate(`/churches/write?church=${church.slug}`)} className="btn btn-primary-solid flex-1" style={{ padding: 10, fontSize: 15 }}>Write a review</button>
+        <button onClick={() => navigate('/churches/map')} className="btn btn-secondary flex-none" style={{ padding: '10px 13px', fontSize: 15 }}>Directions</button>
       </div>
 
       {!church.rated && (
@@ -124,7 +130,7 @@ export function ChurchProfileScreen() {
           <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 60%,transparent)' }}>
             Service times and details aren&rsquo;t listed yet either. If you&rsquo;ve visited, your review is the first thing the next visitor will read.
           </p>
-          <button onClick={() => navigate(`/write?church=${church.slug}`)} className="btn btn-primary-solid" style={{ marginTop: 4, padding: '9px 15px', fontSize: 14.5 }}>Write the first review</button>
+          <button onClick={() => navigate(`/churches/write?church=${church.slug}`)} className="btn btn-primary-solid" style={{ marginTop: 4, padding: '9px 15px', fontSize: 14.5 }}>Write the first review</button>
         </div>
       )}
 
@@ -237,7 +243,7 @@ export function ChurchProfileScreen() {
                   <div className="flex items-center gap-4" style={{ marginTop: 12 }}>
                     <button onClick={() => onHelpful(r)} className="flex items-center gap-[5px]" style={{ fontSize: 12, color: helpfulOn[r.id] ? 'var(--color-accent-700)' : 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
                       <ThumbsUp size={12} strokeWidth={1.6} fill={helpfulOn[r.id] ? 'currentColor' : 'none'} />
-                      <span>Helpful · {r.helpfulCount + (helpfulOn[r.id] ? 1 : 0)}</span>
+                      <span>Helpful · {displayHelpfulCount(r)}</span>
                     </button>
                     <button onClick={() => onFlag(r)} className="flex items-center gap-[5px]" style={{ fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 45%,transparent)' }}>
                       <Flag size={12} strokeWidth={1.6} /><span>{flagged[r.id] ? 'Reported' : 'Report'}</span>

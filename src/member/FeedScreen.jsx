@@ -13,16 +13,26 @@ export function FeedScreen() {
   const [helpfulOn, setHelpfulOn] = useState({})
   const [flagged, setFlagged] = useState({})
 
-  useEffect(() => { fetchFeed().then(setItems).catch(console.error) }, [])
+  useEffect(() => {
+    fetchFeed(20, user?.id).then((rows) => {
+      setItems(rows)
+      setHelpfulOn(Object.fromEntries(rows.map((r) => [r.id, !!r.helpfulOn])))
+    }).catch(console.error)
+  }, [user?.id])
+
+  // r.helpfulCount already includes this member's own vote if helpfulOn was
+  // hydrated true, so the displayed count tracks the *change* from that
+  // hydrated baseline rather than always assuming it started at zero.
+  const displayCount = (r) => (r.helpfulCount - (r.helpfulOn ? 1 : 0)) + (helpfulOn[r.id] ? 1 : 0)
 
   const onHelpful = async (r) => {
-    if (!user) return navigate('/signup')
+    if (!user) return navigate('/churches/signup')
     const on = !!helpfulOn[r.id]
-    await toggleHelpful(r.id, user.id, on)
-    setHelpfulOn((s) => ({ ...s, [r.id]: !on }))
+    const result = await toggleHelpful(r.id, user.id, on)
+    if (result.ok) setHelpfulOn((s) => ({ ...s, [r.id]: result.on }))
   }
   const onFlag = async (r) => {
-    if (!user) return navigate('/signup')
+    if (!user) return navigate('/churches/signup')
     await flagReviewAsMember(r.id, user.id, 'Reported by a member')
     setFlagged((s) => ({ ...s, [r.id]: true }))
   }
@@ -45,7 +55,7 @@ export function FeedScreen() {
             </div>
             <div className="flex-1 min-w-0">
               <div style={{ fontSize: 13 }}><span style={{ fontWeight: 600 }}>{r.author_display_name}</span> reviewed</div>
-              <button onClick={() => navigate(`/church/${r.churches.slug}`)} className="pf-h" style={{ fontSize: 16, color: 'var(--color-text)' }}>{r.churches.name}</button>
+              <button onClick={() => navigate(`/churches/church/${r.churches.slug}`)} className="pf-h" style={{ fontSize: 16, color: 'var(--color-text)' }}>{r.churches.name}</button>
             </div>
             <span style={{ flex: 'none', fontSize: 11, color: 'color-mix(in srgb,var(--color-text) 48%,transparent)' }}>{timeAgo(r.created_at)}</span>
           </div>
@@ -64,7 +74,7 @@ export function FeedScreen() {
           <div className="flex items-center gap-4" style={{ marginTop: 11 }}>
             <button onClick={() => onHelpful(r)} className="flex items-center gap-[5px]" style={{ fontSize: 12, color: helpfulOn[r.id] ? 'var(--color-accent-700)' : 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>
               <ThumbsUp size={12} strokeWidth={1.6} fill={helpfulOn[r.id] ? 'currentColor' : 'none'} />
-              <span>Helpful · {r.helpfulCount + (helpfulOn[r.id] ? 1 : 0)}</span>
+              <span>Helpful · {displayCount(r)}</span>
             </button>
             <button onClick={() => onFlag(r)} className="flex items-center gap-[5px]" style={{ fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 45%,transparent)' }}>
               <Flag size={12} strokeWidth={1.6} /><span>{flagged[r.id] ? 'Reported' : 'Report'}</span>

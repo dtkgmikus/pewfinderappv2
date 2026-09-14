@@ -9,6 +9,12 @@
 drop view if exists church_list cascade;
 drop view if exists review_helpful_counts cascade;
 
+drop table if exists question_answers cascade;
+drop table if exists questions cascade;
+drop table if exists qa_moderators cascade;
+drop table if exists question_tags cascade;
+drop table if exists mux_assets cascade;
+
 drop table if exists church_page_views cascade;
 drop table if exists audit_log cascade;
 drop table if exists billing_receipts cascade;
@@ -36,6 +42,19 @@ drop table if exists church_staff cascade;
 drop table if exists staff_members cascade;
 drop table if exists profiles cascade;
 
+drop trigger if exists on_auth_user_created on auth.users;
+drop function if exists handle_new_user() cascade;
+drop function if exists strike_member(uuid) cascade;
+drop function if exists enforce_video_ready_before_publish() cascade;
+drop function if exists set_answer_moderator_flag() cascade;
+drop function if exists enforce_question_anonymity() cascade;
+drop function if exists is_qa_moderator(uuid) cascade;
+drop function if exists protect_mux_asset_fields() cascade;
+drop function if exists enforce_mux_duration_cap() cascade;
+drop function if exists sync_church_plan_from_subscription() cascade;
+drop function if exists protect_church_admin_fields() cascade;
+drop function if exists church_is_pro(uuid) cascade;
+drop function if exists is_church_editor(uuid, uuid) cascade;
 drop function if exists bump_category_score() cascade;
 drop function if exists bump_church_rating() cascade;
 drop function if exists find_profile_id_by_email(text) cascade;

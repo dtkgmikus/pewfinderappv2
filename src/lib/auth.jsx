@@ -17,16 +17,24 @@ export function AuthProvider({ children }) {
       setStaffRole(null)
       return
     }
-    let { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+    let { data: prof, error: readError } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+    if (readError) console.error('Failed to load profile', readError)
     if (!prof) {
-      const { data: created } = await supabase
+      // Normally the on_auth_user_created trigger (patch-008) already created
+      // this row at signup time. This is just a defensive fallback for a
+      // profile that predates that trigger, or any other edge case.
+      const { data: created, error: insertError } = await supabase
         .from('profiles')
         .insert({ id: user.id, email: user.email, name: user.email.split('@')[0] })
         .select('*')
         .single()
-      prof = created
+      if (insertError) {
+        console.error('Failed to create fallback profile', insertError)
+      } else {
+        prof = created
+      }
     }
-    setProfile(prof)
+    setProfile(prof || null)
 
     const { data: cs } = await supabase
       .from('church_staff')
@@ -54,7 +62,8 @@ export function AuthProvider({ children }) {
     return () => sub.subscription.unsubscribe()
   }, [loadForUser])
 
-  const signUp = (email, password) => supabase.auth.signUp({ email, password })
+  const signUp = (email, password, profileMetadata) =>
+    supabase.auth.signUp({ email, password, options: { data: profileMetadata } })
   const signIn = (email, password) => supabase.auth.signInWithPassword({ email, password })
   const signOut = () => supabase.auth.signOut()
   const refreshProfile = () => loadForUser(session?.user)

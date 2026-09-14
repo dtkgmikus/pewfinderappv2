@@ -65,7 +65,11 @@ function DiscoverTab() {
   const togglePriority = (key) => {
     setPriorities((prev) => {
       const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
-      if (user) supabase.from('profiles').update({ priorities: next }).eq('id', user.id).then(() => {})
+      if (user) {
+        supabase.from('profiles').update({ priorities: next }).eq('id', user.id).then(({ error }) => {
+          if (error) console.error('Failed to save priorities', error)
+        })
+      }
       return next
     })
   }
@@ -100,7 +104,7 @@ function DiscoverTab() {
     <div className="pf-scroll pf-screen flex-1" style={{ padding: '0 0 8px' }}>
       <div style={{ position: 'sticky', top: 0, zIndex: 2, background: 'var(--color-chrome)', paddingTop: 14 }}>
         <div className="px-5" style={{ position: 'relative' }}>
-          <button onClick={() => navigate('/account')} className="flex items-center gap-1" style={{ position: 'absolute', top: 0, right: 0, color: 'var(--color-accent-600)', fontSize: 9.5, letterSpacing: '.07em', textTransform: 'uppercase' }}>
+          <button onClick={() => navigate('/churches/account')} className="flex items-center gap-1" style={{ position: 'absolute', top: 0, right: 0, color: 'var(--color-accent-600)', fontSize: 9.5, letterSpacing: '.07em', textTransform: 'uppercase' }}>
             {user ? <MapPin size={10} strokeWidth={1.6} /> : <CircleUserRound size={12} strokeWidth={1.6} />}
             <span>{user ? 'Atlantic County, NJ' : 'Sign in'}</span>
           </button>
@@ -231,7 +235,7 @@ function DiscoverTab() {
         return (
           <button
             key={c.id}
-            onClick={() => navigate(`/church/${c.slug}`)}
+            onClick={() => navigate(`/churches/church/${c.slug}`)}
             className="pf-tap block w-full text-left px-5 py-[15px] border-t"
             style={{ borderColor: 'var(--color-divider)' }}
           >
@@ -336,7 +340,7 @@ function VisitsTab() {
           <p style={{ fontSize: 14, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
             Create an account to write reviews, save churches, and see your review history here.
           </p>
-          <button onClick={() => navigate('/signup')} className="btn btn-primary-solid" style={{ padding: 12 }}>Get started</button>
+          <button onClick={() => navigate('/churches/signup')} className="btn btn-primary-solid" style={{ padding: 12 }}>Get started</button>
         </div>
       )}
 
@@ -364,7 +368,7 @@ function VisitsTab() {
           {reviews.map((r) => (
             <div key={r.id} className="px-5 border-t" style={{ padding: '15px 20px', borderColor: 'var(--color-divider)' }}>
               <div className="flex items-baseline justify-between gap-[10px]">
-                <button onClick={() => navigate(`/church/${r.churches.slug}`)} className="pf-h" style={{ fontSize: 17, color: 'var(--color-text)' }}>{r.churches.name}</button>
+                <button onClick={() => navigate(`/churches/church/${r.churches.slug}`)} className="pf-h" style={{ fontSize: 17, color: 'var(--color-text)' }}>{r.churches.name}</button>
                 <span style={{ flex: 'none', fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{r.visited_on}</span>
               </div>
               <div className="flex items-center gap-[7px]" style={{ marginTop: 5, color: 'var(--color-accent-2)' }}>

@@ -55,7 +55,7 @@ export function WriteReviewScreen() {
         <p style={{ fontSize: 14, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
           Reviews are tied to an account so churches can trust the visit was real, even when you post anonymously.
         </p>
-        <button onClick={() => navigate('/signup')} className="btn btn-primary-solid" style={{ padding: '10px 18px' }}>Create an account</button>
+        <button onClick={() => navigate('/churches/signup')} className="btn btn-primary-solid" style={{ padding: '10px 18px' }}>Create an account</button>
       </div>
     )
   }
@@ -68,7 +68,7 @@ export function WriteReviewScreen() {
         </div>
         <div className="flex flex-col">
           {picker.map((c) => (
-            <button key={c.id} onClick={() => navigate(`/write?church=${c.slug}`)} className="pf-tap text-left px-5 border-t" style={{ padding: '13px 20px', borderColor: 'var(--color-divider)' }}>
+            <button key={c.id} onClick={() => navigate(`/churches/write?church=${c.slug}`)} className="pf-tap text-left px-5 border-t" style={{ padding: '13px 20px', borderColor: 'var(--color-divider)' }}>
               <div className="pf-h" style={{ fontSize: 16 }}>{c.name}</div>
               <div style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)' }}>{c.denomination} · {c.town}</div>
             </button>
@@ -110,7 +110,7 @@ export function WriteReviewScreen() {
 
   const reset = () => {
     setSubmitted(false); setOverall(0); setCats({}); setSubs({}); setWellText(''); setImproveText('')
-    navigate('/?tab=visits')
+    navigate('/churches?tab=visits')
   }
 
   return (
@@ -138,7 +138,7 @@ export function WriteReviewScreen() {
               <div className="pf-h" style={{ fontSize: 18 }}>{church.name}</div>
               <div style={{ fontSize: 12, color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>{church.denomination}</div>
             </div>
-            <button onClick={() => navigate('/write')} style={{ fontSize: 12.5, color: 'var(--color-accent-600)' }}>Change</button>
+            <button onClick={() => navigate('/churches/write')} style={{ fontSize: 12.5, color: 'var(--color-accent-600)' }}>Change</button>
           </div>
 
           <div className="text-center px-5" style={{ paddingTop: 24 }}>

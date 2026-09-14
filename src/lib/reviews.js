@@ -6,21 +6,43 @@ const REVIEW_SELECT = `
   review_replies(text, created_at)
 `
 
-async function attachHelpfulCounts(rows) {
+// memberId is optional — when given, each row also gets `helpfulOn`,
+// hydrated from a single batched query rather than one lookup per review
+// (previously this never happened at all: screens initialized their
+// helpful-vote state to `{}` and never hydrated it, so a member who had
+// already voted looked like they hadn't — pressing "Helpful" then tried to
+// INSERT a duplicate vote, silently failed, and a second press DELETEd
+// their real existing vote).
+async function attachHelpfulCounts(rows, memberId) {
   if (!rows.length) return rows
-  const { data: counts } = await supabase
+  const ids = rows.map((r) => r.id)
+  const { data: counts, error: countsError } = await supabase
     .from('review_helpful_counts')
     .select('review_id, helpful_count')
-    .in('review_id', rows.map((r) => r.id))
+    .in('review_id', ids)
+  if (countsError) console.error('Failed to load helpful counts', countsError)
   const byId = Object.fromEntries((counts || []).map((c) => [c.review_id, c.helpful_count]))
+
+  let votedIds = new Set()
+  if (memberId) {
+    const { data: votes, error: votesError } = await supabase
+      .from('review_helpful_votes')
+      .select('review_id')
+      .eq('member_id', memberId)
+      .in('review_id', ids)
+    if (votesError) console.error('Failed to load helpful votes', votesError)
+    votedIds = new Set((votes || []).map((v) => v.review_id))
+  }
+
   return rows.map((r) => ({
     ...r,
     reply: r.review_replies?.text || null,
     helpfulCount: r.seed_helpful_count + (byId[r.id] || 0),
+    helpfulOn: votedIds.has(r.id),
   }))
 }
 
-export async function fetchReviewsForChurch(churchId) {
+export async function fetchReviewsForChurch(churchId, memberId) {
   const { data, error } = await supabase
     .from('reviews')
     .select(REVIEW_SELECT)
@@ -28,10 +50,10 @@ export async function fetchReviewsForChurch(churchId) {
     .eq('status', 'published')
     .order('created_at', { ascending: false })
   if (error) throw error
-  return attachHelpfulCounts(data)
+  return attachHelpfulCounts(data, memberId)
 }
 
-export async function fetchFeed(limit = 20) {
+export async function fetchFeed(limit = 20, memberId) {
   const { data, error } = await supabase
     .from('reviews')
     .select(`${REVIEW_SELECT}, churches(name, slug, town)`)
@@ -39,7 +61,7 @@ export async function fetchFeed(limit = 20) {
     .order('created_at', { ascending: false })
     .limit(limit)
   if (error) throw error
-  return attachHelpfulCounts(data)
+  return attachHelpfulCounts(data, memberId)
 }
 
 export async function hasHelpfulVote(reviewId, memberId) {
@@ -53,11 +75,24 @@ export async function hasHelpfulVote(reviewId, memberId) {
   return !!data
 }
 
+// Returns { ok, on } — the caller should only flip its optimistic UI state
+// when ok is true, and use the returned `on` (rather than assuming the
+// toggle it asked for actually happened).
 export async function toggleHelpful(reviewId, memberId, currentlyOn) {
   if (currentlyOn) {
-    await supabase.from('review_helpful_votes').delete().eq('review_id', reviewId).eq('member_id', memberId)
+    const { error } = await supabase.from('review_helpful_votes').delete().eq('review_id', reviewId).eq('member_id', memberId)
+    if (error) {
+      console.error('Failed to remove helpful vote', error)
+      return { ok: false, on: currentlyOn }
+    }
+    return { ok: true, on: false }
   } else {
-    await supabase.from('review_helpful_votes').insert({ review_id: reviewId, member_id: memberId })
+    const { error } = await supabase.from('review_helpful_votes').insert({ review_id: reviewId, member_id: memberId })
+    if (error) {
+      console.error('Failed to add helpful vote', error)
+      return { ok: false, on: currentlyOn }
+    }
+    return { ok: true, on: true }
   }
 }
 

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ShieldCheck } from 'lucide-react'
 import { useAuth } from '../lib/auth.jsx'
-import { supabase } from '../lib/supabase.js'
 import { SIGNUP_GROUPS } from '../data/constants.js'
 
 export function SignupScreen() {
@@ -49,9 +48,6 @@ export function SignupScreen() {
     setBusy(true)
     setError('')
     try {
-      const { data, error: signUpError } = await signUp(email.trim(), password)
-      if (signUpError) throw signUpError
-
       const priorities = (answers['What matters most to you'] || []).map((l) => priorityLabelToKey[l]).filter(Boolean)
       const profileFields = {
         name: name.trim(),
@@ -65,8 +61,15 @@ export function SignupScreen() {
         consent_analytics: consent,
       }
 
+      // profileFields travels as auth signup metadata (raw_user_meta_data) so
+      // the on_auth_user_created DB trigger can create the real profiles row
+      // immediately — this works whether or not email confirmation is on,
+      // unlike writing `profiles` from here (there's no session yet if
+      // confirmation is required, so that write would be silently blocked).
+      const { data, error: signUpError } = await signUp(email.trim(), password, profileFields)
+      if (signUpError) throw signUpError
+
       if (data.session) {
-        await supabase.from('profiles').upsert({ id: data.user.id, email: data.user.email, ...profileFields })
         navigate('/')
       } else {
         setCheckEmail(true)
@@ -86,7 +89,7 @@ export function SignupScreen() {
         <p style={{ fontSize: 14, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
           We sent a confirmation link to {email}. Once confirmed, sign in and your preferences will be waiting.
         </p>
-        <button onClick={() => navigate('/login')} className="btn btn-secondary" style={{ padding: '9px 15px' }}>Go to sign in</button>
+        <button onClick={() => navigate('/churches/login')} className="btn btn-secondary" style={{ padding: '9px 15px' }}>Go to sign in</button>
       </div>
     )
   }
@@ -99,7 +102,7 @@ export function SignupScreen() {
         </button>
         <h1 className="pf-h" style={{ fontSize: 27, fontWeight: 400, marginTop: 16 }}>Tell us what you&rsquo;re looking for</h1>
         <p style={{ margin: '9px 0 0', fontSize: 13.5, lineHeight: 1.62, color: 'color-mix(in srgb,var(--color-text) 62%,transparent)' }}>
-          This is how PewFinder ranks churches for you rather than showing you an alphabetical list. Churches only ever see these answers as totals, never tied to your name.
+          This is how Get-God ranks churches for you rather than showing you an alphabetical list. Churches only ever see these answers as totals, never tied to your name.
         </p>
       </div>
 

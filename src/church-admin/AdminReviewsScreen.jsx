@@ -6,11 +6,12 @@ import { useAuth } from '../lib/auth.jsx'
 import { useAdmin } from './AdminContext.jsx'
 import { avatarColor } from '../data/constants.js'
 import { Chip } from '../components/ui/Chip.jsx'
+import { ProLock } from './ProLock.jsx'
 
 const REASONS = ['Never visited', 'Wrong church', 'Personal attack', 'False claim about a person', 'Spam or advertising']
 
 export function AdminReviewsScreen() {
-  const { church } = useAdmin()
+  const { church, isPro } = useAdmin()
   const { user } = useAuth()
   const [params, setParams] = useSearchParams()
   const [reviews, setReviews] = useState([])
@@ -50,7 +51,8 @@ export function AdminReviewsScreen() {
 
   const postReply = async () => {
     if (!draft.trim() || !selected) return
-    await supabase.from('review_replies').insert({ review_id: selected.id, church_id: church.id, author_profile_id: user.id, text: draft.trim() })
+    const { error } = await supabase.from('review_replies').insert({ review_id: selected.id, church_id: church.id, author_profile_id: user.id, text: draft.trim() })
+    if (error) { console.error('Failed to post reply', error); return }
     setDraft('')
     load()
   }
@@ -115,7 +117,16 @@ export function AdminReviewsScreen() {
               </div>
             )}
 
-            {!selected.review_replies?.text && !flagOpen && (
+            {!selected.review_replies?.text && !flagOpen && !isPro && (
+              <div className="flex flex-col gap-4 border" style={{ borderColor: 'var(--color-divider)', padding: '18px 20px' }}>
+                <ProLock section="reviews" />
+                <button onClick={() => setFlagOpen(true)} className="flex items-center gap-[7px] self-start border" style={{ borderColor: 'var(--color-divider)', padding: '10px 14px', fontSize: 13, color: 'color-mix(in srgb,var(--color-text) 70%,transparent)' }}>
+                  <Flag size={13} strokeWidth={1.7} /><span>Flag this review</span>
+                </button>
+              </div>
+            )}
+
+            {!selected.review_replies?.text && !flagOpen && isPro && (
               <div className="flex flex-col gap-3 border" style={{ borderColor: 'var(--color-divider)', padding: '18px 20px' }}>
                 <div className="flex items-center justify-between gap-3">
                   <span style={{ fontSize: 11, letterSpacing: '.07em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 55%,transparent)' }}>Your public reply</span>
@@ -160,7 +171,7 @@ export function AdminReviewsScreen() {
                     </div>
                     <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Anything that helps us check — dates, who was involved, what actually happened." className="input" style={{ minHeight: 78, fontSize: 13 }} />
                     <div className="flex items-center gap-[12px]">
-                      <button onClick={submitFlag} className="btn btn-primary-solid" style={{ padding: '10px 16px', fontSize: 13 }}>Send to PewFinder</button>
+                      <button onClick={submitFlag} className="btn btn-primary-solid" style={{ padding: '10px 16px', fontSize: 13 }}>Send to Get-God</button>
                       <span style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>Usually reviewed within a day. It stays public meanwhile.</span>
                     </div>
                   </div>

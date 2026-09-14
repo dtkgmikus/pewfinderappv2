@@ -46,7 +46,7 @@ export function sortChurches(list, sortIdx, priorities) {
   if (sortIdx === 0) copy.sort((a, b) => fitScore(b, priorities) - fitScore(a, priorities))
   if (sortIdx === 1) copy.sort((a, b) => (!!a.distance_unknown - !!b.distance_unknown) || (a.distance_mi - b.distance_mi))
   if (sortIdx === 2) copy.sort((a, b) => (b.avg_rating - a.avg_rating) || (a.distance_mi - b.distance_mi))
-  if (sortIdx === 3) copy.sort((a, b) => (b.review_count - a.review_count) || (a.distance_mi - b.distance_mi))
+  if (sortIdx === 3) copy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   return copy
 }
 

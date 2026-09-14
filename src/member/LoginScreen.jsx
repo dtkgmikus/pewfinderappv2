@@ -26,7 +26,7 @@ export function LoginScreen() {
       <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="input" onKeyDown={(e) => e.key === 'Enter' && submit()} />
       {error && <p style={{ color: 'var(--color-accent-700)', fontSize: 13.5 }}>{error}</p>}
       <button onClick={submit} disabled={busy} className="btn btn-primary-solid" style={{ padding: 12 }}>{busy ? 'Signing in…' : 'Sign in'}</button>
-      <button onClick={() => navigate('/signup')} style={{ fontSize: 13.5, color: 'var(--color-accent-700)', textAlign: 'center' }}>
+      <button onClick={() => navigate('/churches/signup')} style={{ fontSize: 13.5, color: 'var(--color-accent-700)', textAlign: 'center' }}>
         New here? Create an account
       </button>
     </div>

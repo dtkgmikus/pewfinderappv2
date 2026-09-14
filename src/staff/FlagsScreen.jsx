@@ -18,6 +18,7 @@ export function FlagsScreen() {
   const [selectedId, setSelectedId] = useState(null)
   const [outcome, setOutcome] = useState('')
   const [note, setNote] = useState('')
+  const [editedWellText, setEditedWellText] = useState('')
 
   const load = () => {
     supabase
@@ -42,17 +43,29 @@ export function FlagsScreen() {
 
   const decide = async () => {
     if (!outcome || !selected) return
-    await supabase.from('review_flags').update({
-      status: 'decided', outcome, decision_note: note, decided_by_profile_id: profile.id, decided_at: new Date().toISOString(),
-    }).eq('id', selected.id)
 
+    if (outcome === 'edit') {
+      const { error } = await supabase.from('reviews').update({ well_text: editedWellText }).eq('id', selected.review_id)
+      if (error) { console.error('Failed to redact review text', error); return }
+    }
     if (outcome === 'remove' || outcome === 'strike') {
-      await supabase.from('reviews').update({ status: 'removed' }).eq('id', selected.review_id)
+      const { error } = await supabase.from('reviews').update({ status: 'removed' }).eq('id', selected.review_id)
+      if (error) { console.error('Failed to remove review', error); return }
     }
     if (outcome === 'strike' && selected.reviews?.member_id) {
-      await supabase.from('profiles').update({ restricted: true }).eq('id', selected.reviews.member_id)
+      // Atomic strike-count + conditional-restrict RPC (patch-007) — the
+      // account is only restricted on its SECOND strike, matching this
+      // outcome's own label, not on the first.
+      const { error } = await supabase.rpc('strike_member', { target_profile_id: selected.reviews.member_id })
+      if (error) { console.error('Failed to record strike', error); return }
     }
-    setOutcome(''); setNote('')
+
+    const { error } = await supabase.from('review_flags').update({
+      status: 'decided', outcome, decision_note: note, decided_by_profile_id: profile.id, decided_at: new Date().toISOString(),
+    }).eq('id', selected.id)
+    if (error) { console.error('Failed to record decision', error); return }
+
+    setOutcome(''); setNote(''); setEditedWellText('')
     load()
   }
 
@@ -68,7 +81,7 @@ export function FlagsScreen() {
         <div className="flex gap-[7px] flex-wrap">{FILTERS.map((f) => <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>{f}</Chip>)}</div>
         <div className="flex flex-col gap-[9px]">
           {filtered.map((f) => (
-            <button key={f.id} onClick={() => { setSelectedId(f.id); setOutcome(''); setNote('') }} className="border text-left flex flex-col gap-[8px]" style={{ borderColor: 'var(--color-divider)', borderLeft: `2px solid ${selected.id === f.id ? 'var(--color-accent)' : 'transparent'}`, background: selected.id === f.id ? 'var(--color-bg)' : 'transparent', padding: '15px 17px' }}>
+            <button key={f.id} onClick={() => { setSelectedId(f.id); setOutcome(''); setNote(''); setEditedWellText('') }} className="border text-left flex flex-col gap-[8px]" style={{ borderColor: 'var(--color-divider)', borderLeft: `2px solid ${selected.id === f.id ? 'var(--color-accent)' : 'transparent'}`, background: selected.id === f.id ? 'var(--color-bg)' : 'transparent', padding: '15px 17px' }}>
               <span className="flex items-center gap-[10px] flex-wrap">
                 <span style={{ fontSize: 13, fontWeight: 500 }}>{f.reviews?.churches?.name}</span>
                 <span style={{ fontSize: 11.5, color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>{f.reviews?.author_display_name} · {'★'.repeat(f.reviews?.overall_rating || 0)}</span>
@@ -101,7 +114,7 @@ export function FlagsScreen() {
             <div className="flex flex-col gap-[9px] border-t" style={{ paddingTop: 14, borderColor: 'var(--color-divider)' }}>
               <span style={{ fontSize: 10, letterSpacing: '.09em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 52%,transparent)' }}>Outcome</span>
               {OUTCOMES.map((o) => (
-                <button key={o.key} onClick={() => setOutcome(o.key)} className="grid gap-[11px] items-start border text-left" style={{ gridTemplateColumns: '16px 1fr', borderColor: outcome === o.key ? 'var(--color-accent)' : 'var(--color-divider)', background: outcome === o.key ? 'color-mix(in srgb,var(--color-accent) 7%,transparent)' : 'var(--color-bg)', padding: '11px 12px' }}>
+                <button key={o.key} onClick={() => { setOutcome(o.key); if (o.key === 'edit') setEditedWellText(selected.reviews?.well_text || '') }} className="grid gap-[11px] items-start border text-left" style={{ gridTemplateColumns: '16px 1fr', borderColor: outcome === o.key ? 'var(--color-accent)' : 'var(--color-divider)', background: outcome === o.key ? 'color-mix(in srgb,var(--color-accent) 7%,transparent)' : 'var(--color-bg)', padding: '11px 12px' }}>
                   <span className="rounded-full border flex items-center justify-center" style={{ width: 15, height: 15, borderColor: outcome === o.key ? 'var(--color-accent)' : 'var(--color-neutral-400)', marginTop: 2 }}>
                     {outcome === o.key && <span className="rounded-full" style={{ width: 7, height: 7, background: 'var(--color-accent)' }} />}
                   </span>
@@ -111,6 +124,12 @@ export function FlagsScreen() {
                   </span>
                 </button>
               ))}
+              {outcome === 'edit' && (
+                <div className="flex flex-col gap-[6px]">
+                  <span style={{ fontSize: 10, letterSpacing: '.09em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 52%,transparent)' }}>Redacted review text</span>
+                  <textarea value={editedWellText} onChange={(e) => setEditedWellText(e.target.value)} placeholder="Edit out the named individual, leave the rest as written." className="input" style={{ minHeight: 96, fontSize: 12.5 }} />
+                </div>
+              )}
               <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note to file. The first sentence is what both sides receive." className="input" style={{ minHeight: 82, fontSize: 12.5 }} />
               <button onClick={decide} disabled={!outcome} className="border" style={{ background: outcome ? 'var(--color-accent-700)' : 'transparent', color: outcome ? 'var(--color-surface)' : 'color-mix(in srgb,var(--color-text) 45%,transparent)', borderColor: 'var(--color-accent-700)', padding: '11px 14px', fontSize: 13 }}>
                 {outcome ? 'Record decision and notify both sides' : 'Pick an outcome'}
