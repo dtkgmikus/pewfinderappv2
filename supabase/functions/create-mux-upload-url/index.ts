@@ -15,7 +15,7 @@ const SITE_URL = Deno.env.get('SITE_URL')! // e.g. https://get-god.com — no tr
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, content-type',
+  'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info, apikey',
 }
 
 Deno.serve(async (req) => {
