@@ -56,7 +56,9 @@ export function AskComposerScreen() {
       setPostedId(id)
     } catch (e) {
       console.error(e)
-      alert('Something went wrong posting your question. Please try again.')
+      const detail = e?.message || 'No error details were returned.'
+      const code = e?.code ? ` (${e.code})` : ''
+      alert(`Something went wrong posting your question.${code}\n\n${detail}`)
     } finally {
       setSubmitting(false)
     }
