@@ -45,7 +45,9 @@ export function AskComposerScreen() {
       const id = await submitQuestion({
         authorId: user.id,
         title: title.trim(),
-        bodyText: mode === 'text' ? (bodyText.trim() || null) : null,
+        // The database requires text or video content in addition to the
+        // required title. A title-only typed question is still valid content.
+        bodyText: mode === 'text' ? (bodyText.trim() || title.trim()) : null,
         videoAssetId: mode === 'video' ? videoAssetId : null,
         tagKey,
         anonymous: anon,
