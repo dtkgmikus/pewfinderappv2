@@ -4,7 +4,7 @@ import { Search, X, ArrowUpDown, MapPin, NotebookPen, SearchX, ThumbsUp, CircleU
 import { useAuth } from '../lib/auth.jsx'
 import { fetchChurches, sortChurches, rankedCategories, withDistanceFrom } from '../lib/churches.js'
 import { supabase } from '../lib/supabase.js'
-import { CATEGORY_LABEL, PRIORITY_CHIP_KEYS, SORT_OPTIONS, ATLANTIC_COUNTY_TOWNS, SEARCH_MODES, SEARCH_MODE_LABEL } from '../data/constants.js'
+import { CATEGORY_LABEL, PRIORITY_CHIP_KEYS, SORT_OPTIONS, PILOT_TOWNS, SEARCH_MODES, SEARCH_MODE_LABEL } from '../data/constants.js'
 import { Logo } from '../components/ui/Logo.jsx'
 import { Chip } from '../components/ui/Chip.jsx'
 import { StarRow } from '../components/ui/Stars.jsx'
@@ -106,7 +106,7 @@ function DiscoverTab() {
         <div className="px-5" style={{ position: 'relative' }}>
           <button onClick={() => navigate('/churches/account')} className="flex items-center gap-1" style={{ position: 'absolute', top: 0, right: 0, color: 'var(--color-accent-600)', fontSize: 9.5, letterSpacing: '.07em', textTransform: 'uppercase' }}>
             {user ? <MapPin size={10} strokeWidth={1.6} /> : <CircleUserRound size={12} strokeWidth={1.6} />}
-            <span>{user ? 'Atlantic County, NJ' : 'Sign in'}</span>
+            <span>{user ? 'South Jersey, NJ' : 'Sign in'}</span>
           </button>
           <div className="flex justify-center">
             <Logo size={30} />
@@ -166,7 +166,7 @@ function DiscoverTab() {
               style={{ width: '100%', fontSize: 14.5 }}
             >
               <option value="">All cities ({churches.length})</option>
-              {ATLANTIC_COUNTY_TOWNS.map((t) => (
+              {PILOT_TOWNS.map((t) => (
                 <option key={t} value={t}>{t} ({churches.filter((c) => c.town === t).length})</option>
               ))}
             </select>
@@ -220,7 +220,7 @@ function DiscoverTab() {
       <div className="flex items-center justify-between px-5" style={{ padding: '17px 20px 9px' }}>
         <span style={{ fontSize: 11.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'color-mix(in srgb,var(--color-text) 50%,transparent)' }}>
           {searchMode === 'name' && nameQuery.trim() && `${filtered.length} ${filtered.length === 1 ? 'match' : 'matches'} for "${nameQuery.trim()}"`}
-          {searchMode === 'name' && !nameQuery.trim() && `${filtered.length} churches · Atlantic County`}
+          {searchMode === 'name' && !nameQuery.trim() && `${filtered.length} churches · pilot area`}
           {searchMode === 'city' && `${filtered.length} churches · ${cityValue || 'all cities'}`}
           {searchMode === 'county' && `${filtered.length} churches · ${countyValue ? `${countyValue} County` : 'all counties'}`}
           {searchMode === 'near_me' && `${filtered.length} churches${geoStatus === 'granted' ? ', sorted by distance' : ''}`}

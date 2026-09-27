@@ -49,6 +49,7 @@ function BasicsTab() {
   const save = async () => {
     await supabase.from('churches').update({
       name: form.name, denomination: form.denomination, phone: form.phone,
+      contact_email: form.contact_email,
       street: form.street, town: form.town, zip: form.zip, first_visit_note: form.first_visit_note,
     }).eq('id', church.id)
     refresh()
@@ -60,6 +61,7 @@ function BasicsTab() {
         <Field label="Church name" span2><input value={form.name || ''} onChange={set('name')} className="input" /></Field>
         <Field label="Denomination"><input value={form.denomination || ''} onChange={set('denomination')} className="input" /></Field>
         <Field label="Phone"><input value={form.phone || ''} onChange={set('phone')} className="input" /></Field>
+        <Field label="Public contact email"><input type="email" value={form.contact_email || ''} onChange={set('contact_email')} className="input" /></Field>
         <Field label="Street" span2><input value={form.street || ''} onChange={set('street')} className="input" /></Field>
         <Field label="What a first-time visitor should know" span2>
           <textarea value={form.first_visit_note || ''} onChange={set('first_visit_note')} rows={4} className="input" />

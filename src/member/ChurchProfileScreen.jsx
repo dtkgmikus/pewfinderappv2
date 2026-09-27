@@ -17,6 +17,7 @@ export function ChurchProfileScreen() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [church, setChurch] = useState(null)
+  const [websiteUrl, setWebsiteUrl] = useState(null)
   const [reviews, setReviews] = useState([])
   const [notes, setNotes] = useState([])
   const [tab, setTab] = useState('reviews')
@@ -30,13 +31,15 @@ export function ChurchProfileScreen() {
     fetchChurchBySlug(slug).then(async (c) => {
       if (!alive || !c) return
       setChurch(c)
-      const [rev, notesRes] = await Promise.all([
+      const [rev, notesRes, websiteRes] = await Promise.all([
         fetchReviewsForChurch(c.id, user?.id),
         supabase.from('sermon_notes').select('*').eq('church_id', c.id).order('date_preached', { ascending: false }),
+        supabase.from('church_social_links').select('url').eq('church_id', c.id).eq('platform', 'website').limit(1).maybeSingle(),
       ])
       setReviews(rev)
       setHelpfulOn(Object.fromEntries(rev.map((r) => [r.id, !!r.helpfulOn])))
       setNotes(notesRes.data || [])
+      setWebsiteUrl(websiteRes.data?.url || null)
       if (user) {
         const { data } = await supabase.from('saved_churches').select('church_id').eq('church_id', c.id).eq('member_id', user.id).maybeSingle()
         setSaved(!!data)
@@ -99,6 +102,14 @@ export function ChurchProfileScreen() {
         <div style={{ fontSize: 12.5, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)', marginTop: 5 }}>
           {church.denomination} · {church.street}{church.distance_mi > 0 && ` · ${church.distance_mi.toFixed(1)} mi`}
         </div>
+        {(church.service_times !== 'Service times not listed' || church.phone || church.contact_email || websiteUrl) && (
+          <div className="flex flex-col gap-[6px]" style={{ marginTop: 11, fontSize: 13, lineHeight: 1.5, color: 'color-mix(in srgb,var(--color-text) 72%,transparent)' }}>
+            {church.service_times !== 'Service times not listed' && <div><strong>Services:</strong> {church.service_times}</div>}
+            {church.phone && <div><strong>Phone:</strong> <a href={`tel:${church.phone}`} style={{ color: 'var(--color-accent-700)' }}>{church.phone}</a></div>}
+            {church.contact_email && <div><strong>Email:</strong> <a href={`mailto:${church.contact_email}`} style={{ color: 'var(--color-accent-700)' }}>{church.contact_email}</a></div>}
+            {websiteUrl && <div><a href={websiteUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--color-accent-700)', textDecoration: 'underline' }}>Visit church website</a></div>}
+          </div>
+        )}
         <div className="flex items-center gap-2" style={{ marginTop: 11, color: 'var(--color-accent-2)' }}>
           {church.rated ? (
             <span className="flex items-center gap-2">

@@ -8,10 +8,9 @@ import { fetchChurches } from '../lib/churches.js'
 import { PlatePhoto } from '../components/ui/PlatePhoto.jsx'
 import { StarRow } from '../components/ui/Stars.jsx'
 
-// Atlantic County, NJ roughly spans Absecon Island to the Pine Barrens —
-// this center + zoom shows the whole county on load.
-const COUNTY_CENTER = [39.4600, -74.6200]
-const COUNTY_ZOOM = 10
+// Regional pilot view covering Atlantic, Cape May, and Cumberland counties.
+const COUNTY_CENTER = [39.30, -74.93]
+const COUNTY_ZOOM = 8
 
 function pinIcon({ rating, selected }) {
   const bg = selected ? 'var(--color-accent-2)' : 'var(--color-accent)'
@@ -105,7 +104,7 @@ export function MapScreen() {
       )}
       {!loadError && churches.length > 0 && withCoords.length === 0 && (
         <div className="absolute rounded-[var(--radius-md)] border" style={{ left: 16, right: 16, top: 106, padding: '10px 12px', background: 'var(--color-surface)', borderColor: 'var(--color-accent-700)', fontSize: 13, color: 'var(--color-accent-700)', zIndex: 500 }}>
-          {churches.length} churches loaded, but none have map coordinates yet — run <code>patch-002-county-wide-schema.sql</code> then <code>patch-003-atlantic-county-churches.sql</code> in Supabase.
+          {churches.length} churches loaded, but none have map coordinates yet — run the county and church listing SQL patches in Supabase.
         </div>
       )}
       {!loadError && churches.length > 0 && withCoords.length > 0 && query.trim() && pins.length === 0 && (

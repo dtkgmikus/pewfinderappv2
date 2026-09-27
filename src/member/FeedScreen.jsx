@@ -44,7 +44,7 @@ export function FeedScreen() {
           <Rss size={12} strokeWidth={1.6} /><span>Recent activity</span>
         </div>
         <h1 className="pf-h" style={{ fontSize: 33, fontWeight: 400, margin: '9px 0 0' }}>Lately, near you</h1>
-        <p style={{ margin: '8px 0 0', fontSize: 13, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)' }}>Newest reviews from churches around Egg Harbor Township and Mays Landing.</p>
+        <p style={{ margin: '8px 0 0', fontSize: 13, color: 'color-mix(in srgb,var(--color-text) 58%,transparent)' }}>Newest reviews from churches across Atlantic, Cape May, and Cumberland counties.</p>
       </div>
 
       {items.map((r) => (

@@ -39,12 +39,14 @@ export const PRIORITY_CHIP_KEYS = ['friendliness', 'kids_nursery', 'parking', 'a
 
 export const SORT_OPTIONS = ['Best fit', 'Closest', 'Highest rated', 'Newest']
 
-export const ATLANTIC_COUNTY_TOWNS = [
+export const PILOT_TOWNS = [
   'Absecon', 'Atlantic City', 'Brigantine', 'Buena', 'Buena Vista Twp', 'Corbin City',
   'Egg Harbor City', 'Egg Harbor Twp', 'Estell Manor', 'Folsom', 'Galloway Twp',
   'Hamilton Twp', 'Hammonton', 'Linwood', 'Longport', 'Margate City', 'Mays Landing',
   'Mullica Twp', 'Northfield', 'Pleasantville', 'Port Republic', 'Somers Point',
   'Ventnor City', 'Weymouth Twp',
+  'Cape May City', 'Lower Township', 'Middle Township', 'North Wildwood',
+  'Bridgeton', 'Millville', 'Vineland',
 ]
 
 export const SEARCH_MODES = ['near_me', 'city', 'name', 'county']

@@ -115,7 +115,9 @@ create table churches (
     'Egg Harbor City','Egg Harbor Twp','Estell Manor','Folsom','Galloway Twp',
     'Hamilton Twp','Hammonton','Linwood','Longport','Margate City','Mays Landing',
     'Mullica Twp','Northfield','Pleasantville','Port Republic','Somers Point',
-    'Ventnor City','Weymouth Twp'
+    'Ventnor City','Weymouth Twp',
+    'Cape May City','Lower Township','Middle Township','North Wildwood',
+    'Bridgeton','Millville','Vineland'
   )),
   county text not null default 'Atlantic',
   zip text not null default '08234',
@@ -128,6 +130,7 @@ create table churches (
   service_times text not null default 'Service times not listed',
   first_visit_note text,
   phone text,
+  contact_email text,
   facts text[] not null default '{}',
   claimed boolean not null default false,
   verified boolean not null default false,
