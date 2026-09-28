@@ -10,8 +10,9 @@ export function SignupScreen() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [homeTown, setHomeTown] = useState('')
+  const [zipCode, setZipCode] = useState('')
   const [answers, setAnswers] = useState({})
+  const [adultConfirmed, setAdultConfirmed] = useState(false)
   const [consent, setConsent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -36,7 +37,7 @@ export function SignupScreen() {
     const v = answers[groupName]
     return multi ? (v && v.length > 0) : !!v
   })
-  const canSubmit = name.trim() && email.trim() && password.length >= 8 && homeTown.trim() && requiredGroupsMet && consent
+  const canSubmit = name.trim() && email.trim() && password.length >= 8 && /^\d{5}$/.test(zipCode.trim()) && requiredGroupsMet && consent && adultConfirmed
 
   const priorityLabelToKey = {
     'Preaching': 'preaching', 'Friendliness / welcome': 'friendliness', 'Kids & nursery': 'kids_nursery',
@@ -51,7 +52,7 @@ export function SignupScreen() {
       const priorities = (answers['What matters most to you'] || []).map((l) => priorityLabelToKey[l]).filter(Boolean)
       const profileFields = {
         name: name.trim(),
-        home_town: homeTown.trim(),
+        home_town: zipCode.trim(),
         priorities,
         worship_style: answers['Worship style'] || null,
         seeking_status: answers['Where you are right now'] || null,
@@ -59,6 +60,7 @@ export function SignupScreen() {
         age_band: answers['Your age'] || null,
         household: answers['Household'] || [],
         consent_analytics: consent,
+        adult_confirmed_18: adultConfirmed,
       }
 
       // profileFields travels as auth signup metadata (raw_user_meta_data) so
@@ -110,7 +112,7 @@ export function SignupScreen() {
         <Field label="Name"><input value={name} onChange={(e) => setName(e.target.value)} placeholder="First name and last initial" className="input" /></Field>
         <Field label="Email"><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="We verify this before your first review" className="input" /></Field>
         <Field label="Password"><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" className="input" /></Field>
-        <Field label="Home town or zip"><input value={homeTown} onChange={(e) => setHomeTown(e.target.value)} placeholder="Egg Harbor Twp or 08234" className="input" /></Field>
+        <Field label="ZIP code"><input inputMode="numeric" autoComplete="postal-code" maxLength={5} value={zipCode} onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5))} placeholder="08234" className="input" /></Field>
 
         {SIGNUP_GROUPS.map(([groupName, options, required, multi]) => (
           <div key={groupName} className="flex flex-col gap-[9px]">
@@ -144,6 +146,13 @@ export function SignupScreen() {
           <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 3 }} />
           <span style={{ fontSize: 12.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 65%,transparent)' }}>
             Churches see these as counts across everyone who viewed them, and nothing at all when fewer than ten people match. Your reviews can be posted under your name or anonymously — that&rsquo;s a separate choice each time.
+          </span>
+        </label>
+
+        <label className="border flex gap-[10px] items-start" style={{ borderColor: 'var(--color-divider)', padding: '14px 15px', background: 'var(--color-surface)' }}>
+          <input type="checkbox" checked={adultConfirmed} onChange={(e) => setAdultConfirmed(e.target.checked)} style={{ marginTop: 3 }} />
+          <span style={{ fontSize: 12.5, lineHeight: 1.6, color: 'color-mix(in srgb,var(--color-text) 65%,transparent)' }}>
+            I confirm that I am 18 years of age or older. A verified mobile number will also be required before I can post a question.
           </span>
         </label>
 

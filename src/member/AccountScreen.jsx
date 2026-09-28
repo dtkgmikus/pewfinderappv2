@@ -25,7 +25,11 @@ export function AccountScreen() {
       <h1 className="pf-h" style={{ fontSize: 27 }}>Account</h1>
       <p style={{ fontSize: 14, color: 'color-mix(in srgb,var(--color-text) 60%,transparent)', marginTop: 6 }}>{profile?.name} · {user.email}</p>
 
-      <button onClick={() => navigate('/admin')} className="btn btn-secondary" style={{ marginTop: 20, padding: '11px 15px', display: 'block', width: '100%', textAlign: 'left' }}>
+      <button onClick={() => navigate('/account/verify')} className="btn btn-secondary" style={{ marginTop: 20, padding: '11px 15px', display: 'block', width: '100%', textAlign: 'left' }}>
+        Verify email, age &amp; mobile before asking
+      </button>
+
+      <button onClick={() => navigate('/admin')} className="btn btn-secondary" style={{ marginTop: 10, padding: '11px 15px', display: 'block', width: '100%', textAlign: 'left' }}>
         {churchRoles.length > 0 ? `Church admin console — ${churchRoles[0].churches?.name}` : 'Claim your church'}
       </button>
       <button onClick={() => navigate('/staff')} className="btn btn-secondary" style={{ marginTop: 10, padding: '11px 15px', display: 'block', width: '100%', textAlign: 'left' }}>

@@ -18,6 +18,7 @@ export function AskComposerScreen() {
   const [anon, setAnon] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [postedId, setPostedId] = useState(null)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     fetchQuestionTags().then(setTags).catch(console.error)
@@ -41,6 +42,7 @@ export function AskComposerScreen() {
   const handleSubmit = async () => {
     if (!canPost) return
     setSubmitting(true)
+    setSubmitError('')
     try {
       const id = await submitQuestion({
         authorId: user.id,
@@ -56,6 +58,10 @@ export function AskComposerScreen() {
       setPostedId(id)
     } catch (e) {
       console.error(e)
+      if (e?.code === '42501') {
+        setSubmitError('Before posting, confirm your email, verify your mobile number, and confirm that you are 18 or older.')
+        return
+      }
       const detail = e?.message || 'No error details were returned.'
       const code = e?.code ? ` (${e.code})` : ''
       alert(`Something went wrong posting your question.${code}\n\n${detail}`)
@@ -184,6 +190,12 @@ export function AskComposerScreen() {
       </div>
 
       <div className="px-5" style={{ paddingTop: 20 }}>
+        {submitError && (
+          <div role="alert" className="border rounded-[var(--radius-md)]" style={{ marginBottom: 12, padding: 13, borderColor: 'var(--color-divider)', background: 'var(--color-surface)' }}>
+            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5, color: 'var(--color-accent-700)' }}>{submitError}</p>
+            <button onClick={() => navigate('/account/verify')} style={{ marginTop: 8, fontSize: 13.5, color: 'var(--color-accent-2-700)', fontWeight: 600 }}>Verify my account</button>
+          </div>
+        )}
         <button
           onClick={handleSubmit}
           disabled={!canPost}

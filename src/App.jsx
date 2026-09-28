@@ -9,6 +9,7 @@ import { MapScreen } from './member/MapScreen.jsx'
 import { SignupScreen } from './member/SignupScreen.jsx'
 import { AccountScreen } from './member/AccountScreen.jsx'
 import { LoginScreen } from './member/LoginScreen.jsx'
+import { QuestionerVerificationScreen } from './member/QuestionerVerificationScreen.jsx'
 
 import { AskLayout } from './ask/AskLayout.jsx'
 import { AskFeedScreen } from './ask/AskFeedScreen.jsx'
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="ask" element={<AskComposerScreen />} />
         <Route path="question/:id" element={<QuestionDetailScreen />} />
         <Route path="account" element={<AccountScreen />} />
+        <Route path="account/verify" element={<QuestionerVerificationScreen />} />
         <Route path="moderate/apply" element={<ModeratorApplyScreen />} />
       </Route>
 
